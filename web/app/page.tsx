@@ -139,6 +139,7 @@ export default function InterviewPage() {
   const hasVoiceConfig = useMemo(() => {
     return !!getVoiceModel?.();
   }, [getVoiceModel, apiConfig]);
+  const isInterviewCompleted = currentSession?.metadata.status === 'completed';
 
   const handleStartInterview = async (mode: 'text' | 'voice' = 'text') => {
     try {
@@ -511,10 +512,10 @@ export default function InterviewPage() {
                         <div className="flex items-center gap-1.5">
                           <div className={cn(
                             "w-2 h-2 rounded-full",
-                            interviewProgress.current >= interviewProgress.total ? "bg-gray-400" : "bg-teal-500 animate-pulse"
+                            isInterviewCompleted ? "bg-gray-400" : "bg-teal-500 animate-pulse"
                           )}></div>
                           <span className="font-medium text-gray-700">
-                            {interviewProgress.current >= interviewProgress.total ? "面试已完成" : "面试进行中"}
+                            {isInterviewCompleted ? "面试已完成" : "面试进行中"}
                           </span>
                         </div>
                         <span className="text-gray-300">|</span>
@@ -599,8 +600,7 @@ export default function InterviewPage() {
                     )}
                     {/* 开启下一轮面试按钮 - 仅在面试完成时显示 */}
                     {interviewProgress &&
-                      interviewProgress.current >= interviewProgress.total &&
-                      currentSession?.metadata.status === 'completed' && (
+                      isInterviewCompleted && (
                         <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200">
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex-1">
@@ -789,7 +789,6 @@ export default function InterviewPage() {
 
                     {/* 判断面试是否已完成 */}
                     {(() => {
-                      const isInterviewCompleted = !!(interviewProgress && interviewProgress.current >= interviewProgress.total);
                       return (
                         <div className="flex gap-2 items-end">
                           <div className="flex-1 relative flex">

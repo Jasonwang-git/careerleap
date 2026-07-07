@@ -89,6 +89,10 @@ class InterviewState(TypedDict):
     # 追问控制
     current_sub_question: Optional[str]
     max_follow_ups: int
+
+    # 完成控制
+    ready_for_summary: bool
+    is_complete: bool
     
     # 用户 API 配置（可选）
     api_config: Optional[dict]
@@ -165,6 +169,8 @@ async def node_planner(state: InterviewState):
         "turn_phase": "opening",
         "current_sub_question": None,
         "max_follow_ups": 2,
+        "ready_for_summary": False,
+        "is_complete": False,
         "round_index": round_index,
         "round_type": round_type
     }
@@ -207,7 +213,9 @@ async def node_responder(state: InterviewState):
         
         return {
             "messages": [response],
-            "turn_phase": "feedback" # 切换到反馈阶段，准备处理用户的下一个回答
+            "turn_phase": "feedback", # 切换到反馈阶段，准备处理用户的下一个回答
+            "ready_for_summary": False,
+            "is_complete": False
         }
         
     # ==========================================
@@ -223,10 +231,12 @@ async def node_responder(state: InterviewState):
     
     # 检查是否所有题目都问完了
     if next_idx >= len(plan):
-        # 所有题目都问完了，直接结束
+        # 所有主线题目都已回答完，下一步进入总结；不要在这里把会话标记为 completed。
         return {
             "current_question_index": next_idx,
-            "question_count": state.get("question_count", 0) + 1
+            "question_count": state.get("question_count", 0) + 1,
+            "ready_for_summary": True,
+            "is_complete": False
         }
     
     current_question = plan[idx]["content"]
@@ -256,7 +266,9 @@ async def node_responder(state: InterviewState):
         "question_count": state.get("question_count", 0) + 1,
         "current_sub_question": None,
         "follow_up_count": 0,
-        "max_questions": state.get("max_questions", 5)
+        "max_questions": state.get("max_questions", 5),
+        "ready_for_summary": False,
+        "is_complete": False
     }
 
 
@@ -287,7 +299,9 @@ async def node_summary(state: InterviewState):
     return {
         "messages": [AIMessage(content=summary)],
         "question_count": state.get("question_count"),
-        "max_questions": state.get("max_questions")
+        "max_questions": state.get("max_questions"),
+        "ready_for_summary": False,
+        "is_complete": True
     }
 
 
@@ -313,12 +327,9 @@ def route_after_responder(state: InterviewState):
     """
     Responder 之后的路由
     """
-    idx = state.get("current_question_index", 0)
-    plan = state.get("interview_plan", [])
-    
-    # 检查是否所有题目都问完了
-    if idx >= len(plan):
-        # 所有题目都问完了，去总结
+    # 只有 responder 明确声明“可以总结”时才进入总结节点。
+    # 这样追问、补充问题或恢复进度时，即使题目索引已经到末尾，也不会提前结束面试。
+    if state.get("ready_for_summary", False):
         return "summary"
         
     # 还有题目，等待用户回答

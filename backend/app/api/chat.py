@@ -279,6 +279,8 @@ async def stream_chat(request: ChatRequest):
         # 即使 Checkpoint 丢失，也能通过数据库恢复上下文
         session = await session_service.get_session(request.thread_id)
         interview_plan = await session_service.get_interview_plan(request.thread_id)
+        last_question_index = (session.messages[-1].question_index if session and session.messages else 0) or 0
+        completed_question_count = (session.metadata.question_count if session else 0) or 0
         
         # 2. 构建输入状态（新架构 - 状态注水模式）
         # 总是传入最新的上下文信息，确保 Graph 状态与数据库一致
@@ -311,9 +313,10 @@ async def stream_chat(request: ChatRequest):
             # 状态注水（恢复）
             "interview_plan": interview_plan if interview_plan else [],
             
-            # 动态计算进度：基于最后一条消息的 question_index
-            "question_count": session.messages[-1].question_index if session and session.messages else 0,
-            "current_question_index": session.messages[-1].question_index if session and session.messages else 0,
+            # question_count 表示已完成的主线问题数；current_question_index 表示当前正在回答的题目索引。
+            # 两者在存在追问时不再等价，不能都从最后一条消息的 question_index 推断。
+            "question_count": completed_question_count,
+            "current_question_index": last_question_index,
             
             # 因为 stream 接口总是处理用户的回答，所以必须进入 feedback 阶段，否则默认为 opening 会导致系统重复当前问题而不是推进到下一题
             "turn_phase": "feedback",
@@ -399,6 +402,9 @@ async def event_generator(graph, inputs, config, thread_id: str, user_message: s
             elif kind == "on_chain_end":
                 output = event["data"].get("output")
                 if output and isinstance(output, dict):
+                    node_name = event.get("metadata", {}).get("langgraph_node", "")
+                    is_complete = bool(output.get("is_complete")) or node_name == "summary"
+
                     if "current_question_index" in output:
                         final_question_index = output["current_question_index"]
                     
@@ -416,7 +422,8 @@ async def event_generator(graph, inputs, config, thread_id: str, user_message: s
                             type="state_update",
                             content=json.dumps({
                                 "question_count": output["question_count"],
-                                "max_questions": output.get("max_questions", inputs.get("max_questions", 5))
+                                "max_questions": output.get("max_questions", inputs.get("max_questions", 5)),
+                                "is_complete": is_complete
                             })
                         )
                         yield f"data: {response.model_dump_json()}\n\n"

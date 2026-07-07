@@ -450,6 +450,7 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
                                     if (stateData.question_count !== undefined) {
                                         const questionCount = stateData.question_count;
                                         const maxQs = stateData.max_questions || get().maxQuestions;
+                                        const isComplete = stateData.is_complete === true;
                                         const currentSession = get().currentSession;
 
                                         // 使用类型断言处理跨 slice 状态更新
@@ -458,16 +459,16 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
                                                 current: questionCount,
                                                 total: maxQs,
                                             },
-                                            currentSession: currentSession && questionCount >= maxQs
+                                            currentSession: currentSession
                                                 ? {
                                                     ...currentSession,
                                                     metadata: {
                                                         ...currentSession.metadata,
-                                                        status: 'completed',
+                                                        status: isComplete ? 'completed' : currentSession.metadata.status,
                                                         question_count: questionCount,
                                                     },
                                                 }
-                                                : currentSession,
+                                                : null,
                                         });
                                     }
                                 } catch {

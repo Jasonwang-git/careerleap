@@ -97,6 +97,63 @@ def _get_omni_client(api_config: Dict[str, Any]):
     return get_async_omni_client(voice_config)
 
 
+def is_interview_closing_message(content: str) -> bool:
+    """
+    判断面试官回复是否明确表达面试结束。
+
+    追问次数只能影响下一步提示词，不能直接判定会话完成；完成状态必须来自明确的结束表达。
+    """
+    normalized = (content or "").strip().lower()
+    if not normalized:
+        return False
+
+    closing_keywords = [
+        "面试结束",
+        "面试到此结束",
+        "面试就到这里",
+        "今天的面试就到这里",
+        "本次面试就到这里",
+        "本轮面试就到这里",
+        "谢谢你的参加",
+        "感谢你的参加",
+        "辛苦了",
+        "再见",
+        "拜拜",
+        "期待你的加入",
+    ]
+
+    import re
+
+    def has_negative_context(keyword: str) -> bool:
+        """识别“还没到面试结束”这类否定上下文，避免把继续面试误判为结束。"""
+        escaped = re.escape(keyword)
+        negative_prefixes = [
+            "还没",
+            "尚未",
+            "未",
+            "没到",
+            "不到",
+            "不是",
+            "并非",
+            "不算",
+            "不能",
+            "不要",
+            "别",
+            "先不",
+            "暂不",
+        ]
+        negative_suffixes = [
+            "还早",
+            "不是",
+            "不代表",
+        ]
+        prefix_pattern = rf"({'|'.join(map(re.escape, negative_prefixes))}).{{0,6}}{escaped}"
+        suffix_pattern = rf"{escaped}.{{0,6}}({'|'.join(map(re.escape, negative_suffixes))})"
+        return bool(re.search(prefix_pattern, normalized) or re.search(suffix_pattern, normalized))
+
+    return any(keyword in normalized and not has_negative_context(keyword) for keyword in closing_keywords)
+
+
 # ============================================================================
 # 面试规划节点
 # ============================================================================
@@ -313,12 +370,9 @@ def calculate_interview_progress(history: List[Dict[str, Any]], plan: List[Dict[
             last_ai_msg = msg.get("content", "").lower()
             break
     
-    # 检查是否到达计划末尾
+    # 检查是否到达计划末尾。即使最后一题已经多次追问，也必须等面试官明确结束。
     if current_q_idx >= len(plan) - 1:
-        closing_keywords = ["面试结束", "再见", "谢谢你的参加", "祝你生活愉快", "今天的面试就到这里", "辛苦了", "拜拜", "期待你的加入"]
-        if any(kw in last_ai_msg for kw in closing_keywords):
-            is_complete = True
-        elif follow_up_count >= 3:
+        if is_interview_closing_message(last_ai_msg):
             is_complete = True
 
     return {
