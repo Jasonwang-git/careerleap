@@ -12,7 +12,6 @@
   <a href="#-功能特性">功能特性</a> •
   <a href="#️-技术栈">技术栈</a> •
   <a href="#-快速开始">快速开始</a> •
-  <a href="#-项目结构">项目结构</a> •
   <a href="#-docker-部署">部署</a>
 </p>
 
@@ -202,84 +201,6 @@ python -m pytest tests -q
 
 ---
 
-## 📁 项目结构
-
-```
-ai-interview/
-├── backend/                         # Python FastAPI 后端
-│   ├── main.py                      # 应用入口
-│   ├── app/
-│   │   ├── api/                     # 接口路由层
-│   │   │   ├── chat.py              # 面试对话 WebSocket/SSE 接口
-│   │   │   ├── voice_chat.py        # 语音面试实时流接口 ⭐
-│   │   │   ├── resume.py            # 简历优化与生成相关接口
-│   │   │   ├── sessions.py          # 会话管理接口
-│   │   │   ├── upload.py            # 文件上传接口
-│   │   │   └── config.py            # API 配置管理
-│   │   │
-│   │   ├── core/                    # 核心业务逻辑 (Agent Graphs)
-│   │   │   ├── graph.py                   # 面试流程状态机 (LangGraph)
-│   │   │   ├── voice_interview.py         # 语音面试核心引擎 ⭐
-│   │   │   ├── resume_optimizer_graph.py  # 简历优化多专家协同 Agent
-│   │   │   ├── resume_generation_graph.py # 简历生成工作流 Agent
-│   │   │   ├── resume_analyzer_graph.py   # 简历初步分析 Agent
-│   │   │   ├── llms.py                    # LLM 工厂与配置
-│   │   │   └── memory.py                  # 对话记忆管理
-│   │   │
-│   │   ├── database/                # 数据持久层
-│   │   │   ├── base.py              # SQLAlchemy 模型定义
-│   │   │   ├── init_db.py           # 数据库初始化脚本
-│   │   │   ├── session_service.py   # 会话数据服务
-│   │   │   └── session_services/    # 细分数据管理模块 (会话、消息、画像)
-│   │   │
-│   │   └── services/                # 通用业务服务
-│   │       ├── ability_service.py   # 能力画像计算服务
-│   │       ├── analysis_service.py  # 报告生成服务
-│   │       └── file_service.py      # 文件处理服务
-│   └── requirements.txt
-│
-├── web/                             # Next.js 前端应用
-│   ├── app/
-│   │   ├── page.tsx                 # 主工作台页面
-│   │   └── layout.tsx               # 全局布局
-│   │
-│   ├── components/                  # React 组件
-│   │   ├── VoiceInterview.tsx       # 实时语音面试界面 ⭐
-│   │   ├── DialogueReview.tsx       # 对话回顾与音频播放
-│   │   ├── ResumeTools.tsx          # 简历工场主容器
-│   │   ├── ResumeGenerationDialog.tsx # 简历生成对话框
-│   │   ├── ResumePreviewDialog.tsx    # 简历预览与导出
-│   │   ├── ResumeHistoryList.tsx      # 历史记录列表
-│   │   ├── ChatMessage.tsx          # 消息气泡组件
-│   │   ├── SessionSidebar.tsx       # 左侧会话导航
-│   │   ├── SessionList.tsx          # 会话列表管理
-│   │   ├── AbilityProfileView.tsx   # 能力雷达图视图
-│   │   └── SettingsDialog.tsx       # 全局设置
-│   │
-│   ├── store/                       # Zustand 状态管理
-│   │   ├── useInterviewStore.ts     # Store 入口
-│   │   └── slices/
-│   │       ├── interviewSlice.ts    # 面试流程状态
-│   │       ├── resumeSlice.ts       # 简历工具状态
-│   │       ├── sessionSlice.ts      # 会话列表状态
-│   │       └── apiConfigSlice.ts    # 模型配置状态
-│   │
-│   ├── hooks/                       # 自定义 Hook
-│   │   ├── useVoiceChat.ts          # 语音交互逻辑核心 ⭐
-│   │   └── useSpeechToText.ts       # 浏览器 STT 封装
-│   │
-│   ├── lib/                         # 工具函数
-│   │   └── api/                     # 前端 API 客户端
-│   │       ├── resume.ts            # 简历相关 API
-│   │       └── sessions.ts          # 会话相关 API
-│   └── public/                      # 静态资源
-│
-├── docker-compose.yml               # 容器编排配置
-└── README.md                        # 项目说明文档
-```
-
----
-
 ## 🐳 Docker 部署
 
 ```bash
@@ -289,38 +210,9 @@ docker-compose --env-file .env.production up -d --build
 
 ---
 
-## 🗺️ 开发路线图
-
-### ✅ 已完成
-
-- [x] **LangGraph 面试状态机**
-  - [x] 多轮面试逻辑
-  - [x] 智能追问与引导
-- [x] **智能简历工场**
-  - [x] 多专家简历诊断（圆桌会议模式）
-  - [x] 简历定向优化建议
-  - [x] 基于面试数据的简历生成
-- [x] **基础设施**
-  - [x] 流式响应 (SSE)
-  - [x] 会话持久化 (PostgreSQL)
-  - [x] Docker 一键部署
-
-- [x] **语音交互 (Real-time Omnichannel)**
-  - [x] Qwen3-Omni 高性能流式响应
-  - [x] VAD 与多端音频同步
-  - [x] 语音会话克隆与历史继承
-
-### 🚧 计划中
-
-- [ ] 面试题库扩充 (RAG)
-- [ ] 更多类型的专家 Agent (如薪资谈判专家)
-
----
-
 ## 📚 文档
 
 - [快速启动指南](docs/快速启动指南.md)
-- [项目框架](docs/项目框架.md)
 
 ---
 
