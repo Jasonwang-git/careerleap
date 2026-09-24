@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PanelLeftClose, Plus, Settings, User, Bot, FileText, MessageCircle } from 'lucide-react';
+import { PanelLeftClose, Plus, Settings, User, FileText, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SessionList } from './SessionList';
@@ -9,7 +9,7 @@ import { ResumeHistoryList } from './ResumeHistoryList';
 import { GeneratedResumeList } from './GeneratedResumeList';
 import { ResumePreviewDialog } from './ResumePreviewDialog';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { useInterviewStore } from '@/store/useInterviewStore';
 import { updateGeneratedResume } from '@/lib/api/resume';
 
@@ -133,7 +133,7 @@ export function SessionSidebar({
                             {/* 1. 顶部图标和关闭按钮 */}
                             <div className="px-4 pt-6 pb-2 flex items-center justify-between">
                                 <div className="w-10 h-10 relative flex items-center justify-center rounded-xl overflow-hidden">
-                                    <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-cover" />
+                                    <Image src="/logo.png" alt="职跃 CareerLeap" width={40} height={40} className="object-contain" />
                                 </div>
                                 <Button
                                     variant="ghost"

@@ -71,12 +71,17 @@ export async function fetchSessionList(
             headers: { 'X-User-ID': getUserId() }
         });
 
-        if (!response.ok) throw new Error('获取会话列表失败');
+        if (!response.ok) {
+            // 会话历史不是首页渲染的必要条件。后端或数据库暂时不可用时，
+            // 保持页面可用并将列表降级为空，避免触发 Next.js 开发错误遮罩。
+            console.warn(`[Sessions] 会话列表暂不可用（HTTP ${response.status}）`);
+            return [];
+        }
 
         const data = await response.json();
         return data.sessions || [];
     } catch (error) {
-        console.error('获取会话列表失败:', error);
+        console.warn('[Sessions] 无法连接会话服务，已使用空列表:', error);
         return [];
     }
 }

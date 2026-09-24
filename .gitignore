@@ -1,6 +1,11 @@
 .vscode
 .chainlit
 __pycache__
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+backend/venv/
 data
 .env
 meta-output

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="web/public/logo.png" alt="AI Interview Agent" width="80" height="80" style="border-radius: 20%">
+  <img src="web/public/logo.png" alt="职跃 CareerLeap" width="80" height="80" style="border-radius: 20%">
 </p>
 
-<h1 align="center">🎯 AI 面试 & 简历智能体</h1>
+<h1 align="center">🎯 职跃 CareerLeap</h1>
 
 <p align="center">
   <strong>基于 LangGraph 的全能求职助手：智能面试模拟 + 简历深度优化</strong>
@@ -20,7 +20,7 @@
   <img src="https://img.shields.io/badge/Python-3.11+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/Node.js-20+-green.svg" alt="Node.js">
   <img src="https://img.shields.io/badge/LangGraph-Latest-orange.svg" alt="LangGraph">
-  <img src="https://img.shields.io/badge/Next.js-15-black.svg" alt="Next.js">
+  <img src="https://img.shields.io/badge/Next.js-16-black.svg" alt="Next.js">
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791.svg" alt="PostgreSQL">
 </p>
 
@@ -28,7 +28,7 @@
 
 ## 📖 项目简介
 
-面面-AI求职助手是一个利用大语言模型（LLM）和 LangGraph 状态机技术构建的综合求职辅助系统。它不仅能进行全真模拟面试，还能像专业的职业咨询师一样，通过多智能体协作（Multi-Agent）对简历进行深度诊断和定向优化，帮助求职者全方位提升竞争力。现已上线测试：[面面-AI求职助手](https://interview.1624899.xyz)
+职跃 CareerLeap 是一个利用大语言模型（LLM）和 LangGraph 状态机技术构建的综合求职辅助系统。它不仅能进行全真模拟面试，还能像专业的职业咨询师一样，通过多智能体协作（Multi-Agent）对简历进行深度诊断和定向优化，帮助求职者全方位提升竞争力。现已上线测试：[职跃 CareerLeap](https://interview.1624899.xyz)
 
 ### 🎬 演示
 
@@ -88,7 +88,7 @@
 | **后端核心** | LangGraph | 复杂 Agent 工作流编排（面试流、优化流） |
 | | LangChain | LLM 交互与工具调用 |
 | | FastAPI | 高性能 Python Web 框架 |
-| **前端** | Next.js 15 | React 全栈框架 (App Router) |
+| **前端** | Next.js 16 | React 19 全栈框架 (App Router) |
 | | TypeScript | 类型安全 |
 | | Tailwind CSS | 原子化样式 |
 | | shadcn/ui | 精美 UI 组件库 |
@@ -191,6 +191,14 @@ npm run dev
 1. 打开浏览器访问 `http://localhost:3000`
 2. 点击左侧 "+" 创建新会话，体验模拟面试
 3. 点击 "简历工具" 标签，体验简历优化与生成功能
+
+### 7. 运行后端测试
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+python -m pytest tests -q
+```
 
 ---
 

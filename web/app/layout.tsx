@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "面面-AI求职助手",
-  description: "智能求职助手，提供模拟面试和简历优化服务",
+  title: "职跃 CareerLeap",
+  description: "你的 AI 职业成长工作台：模拟面试、简历优化与能力成长画像",
 };
 
 export default function RootLayout({

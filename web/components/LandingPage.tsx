@@ -1,702 +1,584 @@
 "use client";
 
-import { Bot, FileText, Stethoscope, Wand2, ArrowRight, CheckCircle2, TrendingUp, Calendar, Zap, Star, Download, Copy, X } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
+import {
+    ArrowRight,
+    AudioLines,
+    BarChart3,
+    BrainCircuit,
+    Check,
+    ChevronRight,
+    FileCheck2,
+    FileText,
+    Mic2,
+    ShieldCheck,
+    Sparkles,
+    Target,
+    TrendingUp,
+    Upload,
+    WandSparkles,
+    Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 interface LandingPageProps {
     onNavigate: (page: "interview" | "resume" | "guide") => void;
 }
 
+const capabilityRows = [
+    { label: "岗位匹配", value: 86, color: "bg-teal-500" },
+    { label: "表达结构", value: 74, color: "bg-blue-500" },
+    { label: "技术深度", value: 68, color: "bg-violet-500" },
+];
+
+const workflowSteps = [
+    {
+        number: "01",
+        title: "导入求职目标",
+        description: "上传简历并粘贴目标岗位 JD，AI 自动建立你的求职上下文。",
+        icon: Upload,
+    },
+    {
+        number: "02",
+        title: "针对性训练",
+        description: "选择文本或语音面试，在真实追问中练习内容与表达。",
+        icon: BrainCircuit,
+    },
+    {
+        number: "03",
+        title: "复盘并提升",
+        description: "查看能力画像和改进建议，再把亮点沉淀进你的简历。",
+        icon: TrendingUp,
+    },
+];
+
+const featureTours = [
+    {
+        number: "01",
+        label: "模拟面试",
+        title: "像真实面试一样思考和表达",
+        description: "AI 根据你的简历与目标岗位动态规划问题，并在回答后自然追问，让训练不再是机械题库。",
+        bullets: ["文本与实时语音双模式", "按轮次调整问题难度", "完整保存回答与录音"],
+        icon: AudioLines,
+        action: "进入面试训练",
+        page: "interview",
+    },
+    {
+        number: "02",
+        label: "简历工作室",
+        title: "从岗位要求反推简历表达",
+        description: "匹配分析、内容优化与 HR 审核三个角色协同工作，把模糊经历转化为有证据的竞争力。",
+        bullets: ["JD 关键词匹配分析", "逐段诊断与改写建议", "生成岗位定向版本"],
+        icon: FileCheck2,
+        action: "打开简历工作室",
+        page: "resume",
+    },
+    {
+        number: "03",
+        label: "成长画像",
+        title: "让每一次练习都有积累",
+        description: "把多次面试中的表现汇总为持续更新的能力画像，明确优势、短板和下一阶段训练重点。",
+        bullets: ["五维能力趋势分析", "自动提取技能标签", "生成可执行提升建议"],
+        icon: BarChart3,
+        action: "开始积累成长数据",
+        page: "interview",
+    },
+] as const;
+
 export function LandingPage({ onNavigate }: LandingPageProps) {
+    const [activeFeature, setActiveFeature] = useState(0);
+    const feature = featureTours[activeFeature];
+    const ActiveFeatureIcon = feature.icon;
+
     const scrollToFeatures = () => {
-        const featuresSection = document.getElementById('features-section');
-        if (featuresSection) {
-            featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        document.getElementById("features-section")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white">
-            {/* 顶部导航 */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-xl text-gray-900">
-                        <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-teal-200" />
-                        <span>面面-AI求职助手</span>
-                    </div>
+        <div className="min-h-screen overflow-hidden bg-[#f8fafc] text-slate-950">
+            <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+                <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8">
+                    <button
+                        type="button"
+                        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        className="flex items-center gap-3"
+                        aria-label="返回首页顶部"
+                    >
+                        <Image src="/logo.png" alt="职跃 CareerLeap" width={38} height={38} priority />
+                        <span className="text-lg font-bold tracking-tight">
+                            职跃 <span className="font-medium text-slate-400">CareerLeap</span>
+                        </span>
+                    </button>
 
-                    <nav className="hidden md:flex items-center gap-15 text-base font-medium text-gray-600">
-                        <span
-                            className="cursor-pointer hover:text-teal-600 transition-colors"
-                            onClick={scrollToFeatures}
-                        >
-                            功能特性
-                        </span>
-                        <span
-                            className="cursor-pointer hover:text-teal-600 transition-colors"
-                            onClick={() => onNavigate("guide")}
-                        >
+                    <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+                        <button type="button" onClick={scrollToFeatures} className="transition-colors hover:text-teal-600">
+                            核心能力
+                        </button>
+                        <button type="button" onClick={() => onNavigate("guide")} className="transition-colors hover:text-teal-600">
                             使用指南
+                        </button>
+                        <span className="flex items-center gap-2 text-slate-400">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            服务正常
                         </span>
-                        <span className="cursor-pointer hover:text-teal-600 transition-colors">关于我们</span>
                     </nav>
 
                     <Button
                         onClick={() => onNavigate("interview")}
-                        className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 shadow-none"
+                        className="h-10 rounded-full bg-slate-950 px-5 text-white hover:bg-slate-800"
                     >
-                        开始使用
+                        开始体验
+                        <ArrowRight className="size-4" />
                     </Button>
                 </div>
             </header>
 
-            {/* 首页头图 */}
-            <main className="flex-1">
-                <section className="pt-45 pb-40 px-6">
-                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                        {/* 左侧内容 */}
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-50 border border-teal-100 rounded-full text-teal-700 text-sm font-medium">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-                                </span>
-                                AI 驱动的面试与简历专家
+            <main>
+                <section className="relative px-5 pb-24 pt-32 sm:px-8 lg:pb-32 lg:pt-40">
+                    <div className="absolute left-1/2 top-0 -z-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.12),transparent_68%)]" />
+                    <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.02fr_0.98fr]">
+                        <div>
+                            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3.5 py-1.5 text-sm font-semibold text-teal-700">
+                                <Sparkles className="size-4" />
+                                AI 驱动的职业成长工作台
                             </div>
 
-                            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1]">
-                                求职准备的<br />
-                                <span className="relative inline-block mt-2">
-                                    数字核心引擎
-                                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-teal-400 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.4" />
-                                    </svg>
-                                </span>
+                            <h1 className="max-w-3xl text-5xl font-bold leading-[1.08] tracking-[-0.045em] text-slate-950 sm:text-6xl lg:text-7xl">
+                                看见优势，
+                                <br />
+                                <span className="text-teal-600">练好表达</span>，拿下机会。
                             </h1>
 
-                            <p className="text-lg text-gray-500 leading-relaxed max-w-lg">
-                                不仅仅是简单的问答。我们引入了<b>匹配分析师</b>、<b>内容优化师</b>与<b>HR审核官</b>等多位 AI 专家，为你提供圆桌会议式的简历诊断与优化服务，并配合全真模拟面试，助你拿下理想 Offer。
+                            <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600">
+                                从简历诊断到全真模拟面试，职跃围绕目标岗位建立训练闭环，
+                                帮你知道哪里需要提升，也知道下一步该怎么做。
                             </p>
 
-                            <div className="flex flex-wrap gap-4 pt-4">
+                            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                                 <Button
                                     size="lg"
                                     onClick={() => onNavigate("interview")}
-                                    className="h-14 px-8 rounded-full bg-teal-600 hover:bg-teal-500 text-white shadow-xl shadow-teal-200 text-base font-semibold transition-all hover:-translate-y-0.5"
+                                    className="h-13 rounded-xl bg-teal-600 px-6 text-base font-semibold text-white shadow-lg shadow-teal-600/20 hover:bg-teal-700"
                                 >
-                                    立即开始模拟面试 <ArrowRight className="ml-2 w-5 h-5" />
+                                    <Mic2 className="size-5" />
+                                    开始模拟面试
                                 </Button>
-
                                 <Button
                                     size="lg"
                                     variant="outline"
                                     onClick={() => onNavigate("resume")}
-                                    className="h-14 px-8 rounded-full border-gray-200 hover:border-teal-200 hover:bg-teal-50 text-gray-700 text-base font-semibold"
+                                    className="h-13 rounded-xl border-slate-300 bg-white px-6 text-base font-semibold text-slate-800 hover:border-teal-300 hover:bg-teal-50"
                                 >
-                                    <FileText className="mr-2 w-5 h-5" />
-                                    专家简历诊断
+                                    <FileText className="size-5" />
+                                    优化我的简历
                                 </Button>
                             </div>
 
-                            <div className="pt-8 grid grid-cols-2 gap-6 max-w-lg">
-                                <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                                        <Bot className="w-5 h-5 text-gray-700" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900">多轮面试模拟</h4>
-                                        <p className="text-xs text-gray-500 mt-1">还原真实面试场景</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                                        <FileText className="w-5 h-5 text-gray-700" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900">个人画像生成</h4>
-                                        <p className="text-xs text-gray-500 mt-1">多维度能力评估</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                                        <Stethoscope className="w-5 h-5 text-gray-700" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900">专家精确会诊</h4>
-                                        <p className="text-xs text-gray-500 mt-1">匹配/内容/HR 三维诊断</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
-                                        <TrendingUp className="w-5 h-5 text-gray-700" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900">JD 定向优化</h4>
-                                        <p className="text-xs text-gray-500 mt-1">基于目标职位的精准优化</p>
-                                    </div>
-                                </div>
+                            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-500">
+                                {[
+                                    "支持自定义模型",
+                                    "文本与语音双模式",
+                                    "面试记录持续沉淀",
+                                ].map((item) => (
+                                    <span key={item} className="flex items-center gap-2">
+                                        <span className="flex size-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                                            <Check className="size-3.5" />
+                                        </span>
+                                        {item}
+                                    </span>
+                                ))}
                             </div>
                         </div>
 
-                        {/* 右侧内容 - 模型 */}
-                        <div className="relative animate-in fade-in slide-in-from-right-5 duration-1000 delay-200 hidden lg:block">
-                            {/* 背景装饰 */}
-                            <div className="absolute -top-20 -right-20 w-96 h-96 bg-teal-100/50 rounded-full blur-3xl opacity-50" />
-                            <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-blue-100/50 rounded-full blur-3xl opacity-50" />
-
-                            {/* 模型卡片容器 */}
-                            <div className="relative bg-white rounded-3xl p-6 shadow-2xl border border-gray-100 max-w-lg mx-auto transform rotate-1 hover:rotate-0 transition-transform duration-500">
-
-                                {/* 仪表板标题 */}
-                                <div className="flex items-center justify-between mb-8">
+                        <div className="relative mx-auto w-full max-w-xl">
+                            <div className="absolute -inset-8 -z-10 rounded-[40px] bg-gradient-to-br from-teal-200/50 via-blue-100/30 to-transparent blur-2xl" />
+                            <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-[0_32px_90px_-40px_rgba(15,23,42,0.35)]">
+                                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
                                     <div>
-                                        <div className="text-xs text-gray-400 font-medium mb-1">DASHBOARD</div>
-                                        <div className="font-bold text-gray-900 text-lg">求职竞争力分析</div>
+                                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Career dashboard</p>
+                                        <h2 className="mt-1 text-lg font-bold text-slate-900">求职准备度</h2>
                                     </div>
-                                    <div className="flex -space-x-2">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-[10px] text-blue-600 font-bold" title="匹配分析师">M</div>
-                                        <div className="w-8 h-8 rounded-full bg-purple-100 border-2 border-white flex items-center justify-center text-[10px] text-purple-600 font-bold" title="内容优化师">C</div>
-                                        <div className="w-8 h-8 rounded-full bg-orange-100 border-2 border-white flex items-center justify-center text-[10px] text-orange-600 font-bold" title="HR审核官">H</div>
-                                    </div>
-                                </div>
-
-                                {/* 主要统计卡片 */}
-                                <div className="flex gap-4 mb-6">
-                                    <div className="flex-1 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-5 text-white shadow-lg shadow-teal-200 transform hover:-translate-y-1 transition-transform">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                                <FileText className="w-5 h-5 text-white" />
-                                            </div>
-                                            <span className="text-teal-100 text-xs font-medium bg-white/10 px-2 py-1 rounded-full">进行中</span>
-                                        </div>
-                                        <div className="text-lg font-bold mb-1">专家诊断中</div>
-                                        <div className="text-teal-100 text-[10px] opacity-80">三位 AI 专家正在分析您的简历...</div>
-                                    </div>
-
-                                    <div className="flex-1 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm transform hover:-translate-y-1 transition-transform">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                                                <Zap className="w-5 h-5 text-blue-600" />
-                                            </div>
-                                        </div>
-                                        <div className="text-3xl font-bold text-gray-900 mb-1">12<span className="text-lg text-gray-400 font-normal">场</span></div>
-                                        <div className="text-gray-500 text-sm">实战模拟面试</div>
+                                    <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                                        <span className="size-2 rounded-full bg-emerald-500" />
+                                        本周提升 8%
                                     </div>
                                 </div>
 
-                                {/* 列表项 - 漂浮卡片效果 */}
-                                <div className="relative">
-                                    <div className="text-xs text-gray-400 font-medium mb-3 uppercase tracking-wider">最新优化建议</div>
-
-                                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 group cursor-pointer hover:border-teal-200 transition-all">
-                                        <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg group-hover:bg-purple-100 transition-colors">
-                                            <Star className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-gray-900 text-sm">STAR 法则应用建议</h4>
-                                            <div className="mt-1 text-xs text-gray-500 line-clamp-1">
-                                                建议将"负责前端开发"修改为"主导..."
+                                <div className="grid gap-5 p-6 sm:grid-cols-[170px_1fr]">
+                                    <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-950 px-5 py-6 text-white">
+                                        <div className="relative flex size-30 items-center justify-center rounded-full bg-[conic-gradient(#2dd4bf_0deg,#2dd4bf_281deg,#263244_281deg,#263244_360deg)]">
+                                            <div className="flex size-24 flex-col items-center justify-center rounded-full bg-slate-950">
+                                                <span className="text-4xl font-bold tracking-tight">78</span>
+                                                <span className="text-xs text-slate-400">综合评分</span>
                                             </div>
                                         </div>
-                                        <Button size="icon" variant="ghost" className="rounded-full bg-gray-50 group-hover:bg-teal-600 group-hover:text-white transition-all">
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-
-                                    {/* 漂浮徽章 */}
-                                    <div className="absolute -right-4 top-8 bg-white rounded-xl shadow-lg border border-gray-100 p-3 flex items-center gap-3 animate-float">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                            <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-gray-900 text-sm">优化完成</div>
-                                            <div className="text-xs text-gray-500">匹配度提升 30%</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* 添加按钮 */}
-                                <div className="absolute -bottom-5 -right-5">
-                                    <button className="w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 transition-transform">
-                                        <Wand2 className="w-6 h-6" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* 功能部分 1 */}
-                <section id="features-section" className="py-24 bg-slate-50 border-t border-gray-100">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <div className="mb-16 max-w-3xl">
-                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl text-left">
-                                洞察真实竞争力
-                            </h2>
-                            <p className="mt-4 text-lg text-gray-500 text-left">
-                                分析模拟面试对话内容，多维度评估简历质量，精准定位求职短板。
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* 卡片 2：极速启动 */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden group">
-                                <div className="mb-6 relative z-10">
-                                    <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 mb-4">
-                                        <Zap className="w-6 h-6" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">极速启动</h3>
-                                    <p className="text-gray-500 text-sm">三步配置，一键开启模拟面试。</p>
-                                </div>
-
-                                {/* 模拟 UI - 表单布局 */}
-                                <div className="bg-slate-50/80 rounded-xl p-5 border border-slate-100 flex-1 flex flex-col relative top-4 group-hover:top-2 transition-all duration-500">
-                                    {/* 表单元素 */}
-                                    <div className="space-y-4 flex-1">
-                                        {/* 第1步：上传简历 */}
-                                        <div className="space-y-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-4 h-4 rounded-full bg-teal-100 text-teal-600 text-[10px] font-bold flex items-center justify-center">1</span>
-                                                <span className="text-xs font-bold text-slate-700">上传简历</span>
-                                            </div>
-                                            <div className="h-10 border border-dashed border-slate-300 rounded-lg bg-white flex items-center justify-center gap-2 text-slate-400 hover:border-teal-400 hover:text-teal-500 transition-colors cursor-default">
-                                                <FileText className="w-3.5 h-3.5" />
-                                                <span className="text-[10px] font-medium">支持 PDF/Word 文件</span>
-                                            </div>
-                                        </div>
-
-                                        {/* 第2步：职位描述 */}
-                                        <div className="space-y-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-4 h-4 rounded-full bg-teal-100 text-teal-600 text-[10px] font-bold flex items-center justify-center">2</span>
-                                                <span className="text-xs font-bold text-slate-700">岗位要求</span>
-                                            </div>
-                                            <div className="h-14 border border-slate-200 rounded-lg bg-white p-2">
-                                                <div className="space-y-1.5">
-                                                    <div className="h-1.5 bg-slate-100 rounded-full w-3/4"></div>
-                                                    <div className="h-1.5 bg-slate-100 rounded-full w-full"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* 步骤3：公司信息（可选）*/}
-                                        <div className="space-y-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-4 h-4 rounded-full bg-teal-50 text-teal-500 text-[10px] font-bold flex items-center justify-center">3</span>
-                                                <span className="text-xs font-bold text-slate-700">公司信息 <span className="text-slate-400 font-normal scale-90 inline-block">(选填)</span></span>
-                                            </div>
-                                            <div className="h-8 border border-slate-200 rounded-lg bg-white flex items-center px-2">
-                                                <span className="text-[10px] text-slate-300">请输入目标公司信息...</span>
-                                            </div>
-                                        </div>
-
-                                        {/* 步骤 4：设置 */}
-                                        <div className="space-y-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-4 h-4 rounded-full bg-teal-100 text-teal-600 text-[10px] font-bold flex items-center justify-center">4</span>
-                                                <span className="text-xs font-bold text-slate-700">题目数量</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 pt-1">
-                                                <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                                    <div className="w-3/5 h-full bg-teal-400 rounded-full"></div>
-                                                </div>
-                                                <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded border border-teal-100">5题</span>
-                                            </div>
+                                        <div className="mt-5 flex items-center gap-2 text-sm text-teal-300">
+                                            <TrendingUp className="size-4" />
+                                            状态良好，继续训练
                                         </div>
                                     </div>
 
-                                    {/* 模拟按钮 */}
-                                    <div className="mt-5 pt-4 border-t border-slate-200/60">
-                                        <div className="w-full h-9 bg-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-teal-200 group-hover:bg-teal-500 transition-colors">
-                                            开始模拟面试
+                                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                        <div className="mb-5 flex items-center justify-between">
+                                            <span className="text-sm font-bold text-slate-800">能力分布</span>
+                                            <BarChart3 className="size-4 text-slate-400" />
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* 卡片 1：简历分析（跨度 2） */}
-                            <div className="lg:col-span-2 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden relative group">
-                                <div className="mb-8 relative z-10">
-                                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4">
-                                        <TrendingUp className="w-6 h-6" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">深度简历竞争力分析</h3>
-                                    <p className="text-gray-500">关联面试记录，对标目标岗位 JD，提供精确到点的优化建议。</p>
-                                </div>
-
-                                {/* 模拟 UI - 分析结果 */}
-                                <div className="space-y-4 relative top-4 group-hover:top-2 transition-all duration-500">
-                                    {/* 1. 竞争力分析结果 */}
-                                    <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <div className="flex items-center gap-3">
-                                                <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
-                                                <span className="font-bold text-slate-800">竞争力分析结果</span>
-                                            </div>
-                                            <div className="text-4xl font-bold text-teal-600">88<span className="text-sm text-slate-400 ml-1">分</span></div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                                            {[
-                                                { label: "表达清晰", val: 88, color: "bg-blue-500", textColor: "text-blue-600" },
-                                                { label: "JD匹配", val: 93, color: "bg-blue-500", textColor: "text-blue-600" },
-                                                { label: "结构规范", val: 92, color: "bg-teal-500", textColor: "text-teal-600" },
-                                                { label: "亮点突出", val: 90, color: "bg-teal-500", textColor: "text-teal-600" },
-                                                { label: "内容完整", val: 90, color: "bg-purple-500", textColor: "text-purple-600" },
-                                                { label: "量化程度", val: 95, color: "bg-purple-500", textColor: "text-purple-600" }
-                                            ].map(item => (
-                                                <div key={item.label} className="space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-sm font-bold text-slate-700">{item.label}</span>
-                                                        <span className={`text-sm font-bold ${item.textColor}`}>{item.val}</span>
+                                        <div className="space-y-5">
+                                            {capabilityRows.map((item) => (
+                                                <div key={item.label}>
+                                                    <div className="mb-2 flex items-center justify-between text-xs">
+                                                        <span className="font-medium text-slate-600">{item.label}</span>
+                                                        <span className="font-bold text-slate-900">{item.value}</span>
                                                     </div>
-                                                    <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                                                        <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.val}%` }}></div>
+                                                    <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                                                        <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* 2. 优势/待改进  */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {/* 优势 */}
-                                        <div className="bg-green-50/50 rounded-xl p-4 border border-green-100">
-                                            <div className="flex items-center gap-2 mb-3 text-green-700 font-bold text-sm">
-                                                <CheckCircle2 className="w-4 h-4" />
-                                                优势
-                                            </div>
-                                            <div className="bg-white/60 rounded-lg p-2 text-xs text-green-800 leading-relaxed mb-2">
-                                                兼具 AI 工程与产品双重能力，高效衔接技术与业务
-                                            </div>
-                                            <div className="bg-white/60 rounded-lg p-2 text-xs text-green-800 leading-relaxed">
-                                                已验证 AI 落地能力，对口程度高
-                                            </div>
+                                <div className="mx-6 mb-6 grid grid-cols-3 overflow-hidden rounded-2xl border border-slate-200">
+                                    {[
+                                        ["12", "完成训练"],
+                                        ["36", "回答复盘"],
+                                        ["5", "技能标签"],
+                                    ].map(([value, label], index) => (
+                                        <div key={label} className={`px-3 py-4 text-center ${index !== 2 ? "border-r border-slate-200" : ""}`}>
+                                            <div className="text-xl font-bold text-slate-900">{value}</div>
+                                            <div className="mt-0.5 text-xs text-slate-500">{label}</div>
                                         </div>
-                                        {/* 待改进 */}
-                                        <div className="bg-orange-50/50 rounded-xl p-4 border border-orange-100">
-                                            <div className="flex items-center gap-2 mb-3 text-orange-700 font-bold text-sm">
-                                                <TrendingUp className="w-4 h-4" />
-                                                待改进
-                                            </div>
-                                            <div className="bg-white/60 rounded-lg p-2 text-xs text-orange-800 leading-relaxed mb-2">
-                                                工作经历较短，需强调稳定性
-                                            </div>
-                                            <div className="bg-white/60 rounded-lg p-2 text-xs text-orange-800 leading-relaxed">
-                                                需证明产品主导权而非兼岗
-                                            </div>
-                                        </div>
-                                    </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="absolute -bottom-6 -left-5 hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xl sm:flex">
+                                <span className="flex size-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                                    <Target className="size-5" />
+                                </span>
+                                <div>
+                                    <p className="text-xs text-slate-400">目标岗位匹配度</p>
+                                    <p className="text-sm font-bold text-slate-900">提升至 86%</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-
-                {/* 功能部分 2*/}
-                <section className="py-24 bg-white border-t border-gray-100">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <div className="mb-16 max-w-3xl">
-                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl text-left">
-                                给出精准方案
-                            </h2>
-                            <p className="mt-4 text-lg text-gray-500 text-left">
-                                从精准画像到内容落地，让每一次优化都切实可见。
+                <section id="features-section" className="border-y border-slate-800 bg-slate-950 px-5 py-24 text-white sm:px-8 lg:py-30">
+                    <div className="mx-auto max-w-7xl">
+                        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+                            <div>
+                                <p className="text-sm font-bold uppercase tracking-[0.2em] text-teal-400">Interactive product tour</p>
+                                <h2 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+                                    不只是功能列表，直接看看它如何工作
+                                </h2>
+                            </div>
+                            <p className="max-w-md text-base leading-7 text-slate-400">
+                                点击不同模块，查看职跃如何连接面试训练、简历优化与长期能力成长。
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* 卡片 1：面试能力精准画像 */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
-                                <div className="mb-6">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">面试能力精准画像</h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed">
-                                        基于 STAR 法则拆解您的回答，生成包含专业能力、协作、逻辑等多维度的六边形能力评估图。
-                                    </p>
-                                </div>
-
-                                {/* 可视化容器 - 暗黑模式 */}
-                                <div className="mt-auto bg-[#0F172A] rounded-2xl p-6 relative overflow-hidden aspect-[4/3] flex items-center justify-center group-hover:shadow-inner transition-all">
-                                    {/* 装饰 - 暗黑模式下的发光背景 */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl"></div>
-
-                                    {/* 雷达图容器 */}
-                                    <div className="w-full max-w-[260px] aspect-square relative flex items-center justify-center">
-                                        {/* 数据形状 - 六边形雷达图 */}
-                                        <svg viewBox="0 0 100 100" className="w-full h-full relative z-10 overflow-visible">
-                                            <defs>
-                                                <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor="#2DD4BF" stopOpacity="0.4" />
-                                                    <stop offset="100%" stopColor="#2DD4BF" stopOpacity="0.1" />
-                                                </linearGradient>
-                                            </defs>
-
-                                            {/* 背景网格 - 六边形 */}
-                                            <g stroke="#2DD4BF" strokeWidth="0.5" fill="none" className="opacity-20">
-                                                {/* 外部六边形 */}
-                                                <path d="M50 15 L80 32 L80 68 L50 85 L20 68 L20 32 Z" strokeDasharray="4 4" />
-                                                {/* 中间六边形 */}
-                                                <path d="M50 32.5 L65 41 L65 59 L50 67.5 L35 59 L35 41 Z" strokeDasharray="4 4" />
-                                                {/* 十字线 */}
-                                                <path d="M50 15 L50 85" strokeDasharray="2 2" />
-                                                <path d="M20 32 L80 68" strokeDasharray="2 2" />
-                                                <path d="M80 32 L20 68" strokeDasharray="2 2" />
-                                            </g>
-
-                                            {/* 主要数据多边形 - 仅填充（无描边/点） */}
-                                            <path
-                                                d="M50 18 L77 34 L75 65 L50 85 L23 66 L22 34 Z"
-                                                fill="url(#radarGradient)"
-                                                stroke="#2DD4BF"
-                                                strokeWidth="1"
-                                                className="opacity-90 max-w-full"
-                                            />
-                                        </svg>
-
-                                        {/* Labels */}
-                                        <div className="absolute inset-0 pointer-events-none">
-                                            <span className="absolute top-[8%] left-1/2 -translate-x-1/2 text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">专业能力</span>
-                                            <span className="absolute top-[28%] -right-[8%] text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">执行与结果导向</span>
-                                            <span className="absolute bottom-[28%] -right-[8%] text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">逻辑与问题解决</span>
-                                            <span className="absolute bottom-[8%] left-1/2 -translate-x-1/2 text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">沟通表达力</span>
-                                            <span className="absolute bottom-[28%] -left-[2%] text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">成长潜力</span>
-                                            <span className="absolute top-[28%] -left-[2%] text-[10px] font-medium text-teal-100/90 whitespace-nowrap bg-[#0F172A]/80 px-1 rounded">协作能力</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* 卡片2：优化建议 */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
-                                <div className="mb-6">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">智能优化建议</h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed">
-                                        不只是指出问题，更提供具体可行的修改方案。P1/P2 优先级划分，让优化有的放矢。
-                                    </p>
-                                </div>
-
-                                {/* 视觉容器 - 暗黑模式 */}
-                                <div className="mt-auto bg-[#0F172A] rounded-2xl p-5 relative overflow-hidden aspect-[4/3] flex flex-col justify-center space-y-3 group-hover:shadow-inner transition-all">
-                                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
-
-                                    {/* 建议项目 */}
-                                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/5 hover:bg-white/15 transition-colors cursor-default">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="bg-red-500/20 text-red-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-red-500/30">P1</span>
-                                            <span className="text-xs font-bold text-white">产品经验真实性</span>
-                                        </div>
-                                        <div className="text-[12px] text-gray-400 line-clamp-2">
-                                            建议将"产品负责人"修改为"承担产品接口人角色"，避免夸大。
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white/5 backdrop-blur-md rounded-xl p-3 border border-white/5 hover:bg-white/10 transition-colors cursor-default">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="bg-orange-500/20 text-orange-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-orange-500/30">P2</span>
-                                            <span className="text-xs font-bold text-gray-200">效果评估深度</span>
-                                        </div>
-                                        <div className="text-[10px] text-gray-500 line-clamp-1">
-                                            补充定义 KPI、收集用户反馈等闭环手段。
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* 卡片3：简历重写 */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
-                                <div className="mb-6">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">AI 辅助内容重写</h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed">
-                                        对标专家级简历范文，AI 自动重写描述，提升内容的专业度、逻辑性与人岗匹配度。
-                                    </p>
-                                </div>
-
-                                {/* 视觉容器 - 暗黑模式 */}
-                                <div className="mt-auto bg-[#0F172A] rounded-2xl p-5 relative overflow-hidden aspect-[4/3] flex flex-col justify-center group-hover:shadow-inner transition-all">
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
-
-                                    <div className="space-y-3 relative z-10 pl-2">
-                                        {/* 之前 */}
-                                        <div className="flex gap-2 opacity-50">
-                                            <div className="w-0.5 h-full bg-gray-600 rounded-full"></div>
-                                            <div className="text-[14px] text-gray-400 font-mono line-through">
-                                                负责 AI 项目的前端开发，做了一些页面。
-                                            </div>
-                                        </div>
-
-                                        {/* 箭 头*/}
-                                        <div className="text-teal-500 animate-bounce py-1">
-                                            <ArrowRight className="w-4 h-4 rotate-90 ml-1" />
-                                        </div>
-
-                                        {/* 之后 */}
-                                        <div className="flex gap-2">
-                                            <div className="w-0.5 h-full bg-teal-500 rounded-full"></div>
-                                            <div className="text-[14px] text-teal-50 font-mono leading-relaxed">
-                                                主导 <span className="text-teal-400">AI 智能体</span>前端架构设计，使用 React 实现响应式界面，
-                                                <span className="bg-teal-500/20 text-teal-300 px-1 rounded mx-1">效率提升 30%</span>。
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* 功能部分 3 */}
-                <section className="py-24 bg-slate-50 border-t border-gray-100">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <div className="mb-16 max-w-3xl">
-                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl text-left">
-                                优秀的简历生成
-                            </h2>
-                            <p className="mt-4 text-lg text-gray-500 text-left">
-                                深度解析个人经历，AI 驱动的一站式简历重塑方案
-                            </p>
-                        </div>
-                        {/* 卡片 3：简历生成 */}
-                        <div className="lg:col-span-3 bg-gray-900 rounded-3xl p-8 border border-gray-800 shadow-xl overflow-hidden relative group text-white">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                                <div className="relative z-10">
-                                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white mb-6 backdrop-blur-sm">
-                                        <Wand2 className="w-6 h-6" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold mb-4">专家级简历智能生成</h3>
-                                    <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                                        无需繁琐排版，AI 基于深度诊断结果与目标岗位要求，为您自动撰写、润色并排版出专业的求职简历。支持针对性补充关键细节，让每一份简历都直击要害。
-                                    </p>
-                                    <Button
-                                        onClick={() => onNavigate("resume")}
-                                        className="bg-teal-500 hover:bg-teal-400 text-white rounded-full px-8 py-6 text-lg font-semibold border-none"
-                                    >
-                                        开始生成优化建议 <ArrowRight className="ml-2 w-5 h-5" />
-                                    </Button>
-                                </div>
-
-                                {/* 模拟 UI - 简历预览窗口 */}
-                                <div className="relative mx-auto w-full max-w-md transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                                    {/* 窗口容器 */}
-                                    <div className="bg-[#F8FAFC] rounded-lg shadow-2xl overflow-hidden">
-                                        {/* 顶部工具栏 */}
-                                        <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                {/* Mac 窗口控制点 */}
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/30"></div>
-                                                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/30"></div>
-                                                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/30"></div>
-                                                </div>
-
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-teal-50 rounded flex items-center justify-center text-teal-600">
-                                                        <FileText className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs font-bold text-gray-900">张三-高级产品经理简历</div>
-                                                        <div className="text-[10px] text-gray-500">Markdown 预览模式</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 cursor-pointer hover:bg-gray-100">
-                                                    <Copy className="w-3 h-3" /> 复制
-                                                </div>
-                                                <div className="flex items-center gap-1 px-2 py-1 bg-teal-50 border border-teal-100 rounded text-xs text-teal-600 font-medium cursor-pointer hover:bg-teal-100">
-                                                    <Download className="w-3 h-3" /> 下载
-                                                </div>
-                                                <X className="w-4 h-4 text-gray-300 ml-1 cursor-pointer hover:text-gray-500" />
-                                            </div>
-                                        </div>
-
-                                        {/* 简历内容区域 */}
-                                        <div className="p-6 h-[400px] overflow-hidden relative bg-slate-100">
-                                            {/* 滚动条模拟 */}
-                                            <div className="absolute right-1.5 top-2 bottom-2 w-1.5 bg-gray-200/50 rounded-full z-10">
-                                                <div className="w-full h-1/3 bg-gray-300 rounded-full"></div>
-                                            </div>
-
-                                            {/* 纸张效果 */}
-                                            <div className="bg-white shadow-sm border border-gray-100 rounded min-h-full p-8 text-gray-800 scale-[0.9] origin-top">
-                                                {/* 简历头部 */}
-                                                <div className="text-center mb-8">
-                                                    <h1 className="text-2xl font-bold text-gray-900 mb-3">张三</h1>
-
-                                                    <div className="bg-slate-50 py-3 px-4 rounded-lg text-[10px] text-gray-600 leading-relaxed border border-gray-100">
-                                                        "138-xxxx-xxxx | zhangsan@email.com <br />
-                                                        高级产品经理 | 期望薪资：25-35K | 期望城市：上海"
-                                                    </div>
-                                                </div>
-
-                                                {/* 个人简介 */}
-                                                <div className="mb-6">
-                                                    <h2 className="text-sm font-bold text-gray-900 border-b-2 border-gray-900 pb-1 mb-3">
-                                                        个人简介
-                                                    </h2>
-                                                    <ul className="space-y-2 text-[10px] leading-relaxed text-gray-600">
-                                                        <li className="flex gap-2">
-                                                            <span className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0"></span>
-                                                            <span>5年互联网大厂经验，擅长用户增长与商业化变现。</span>
-                                                        </li>
-                                                        <li className="flex gap-2">
-                                                            <span className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0"></span>
-                                                            <span>主导过千万级用户产品的从0到1，具备优秀的数据分析能力。</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-
-                                                {/* 工作经历 */}
-                                                <div className="mb-6">
-                                                    <h2 className="text-sm font-bold text-gray-900 border-b-2 border-gray-900 pb-1 mb-3">
-                                                        工作经历
-                                                    </h2>
-
-                                                    <div className="mb-3">
-                                                        <div className="flex justify-between items-baseline mb-1">
-                                                            <h3 className="text-xs font-bold text-gray-800">某知名科技公司 | 高级产品经理</h3>
-                                                            <span className="text-[10px] text-gray-500">2021.03 - 至今</span>
+                        <div className="mt-14 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20">
+                            <div className="grid lg:grid-cols-[360px_1fr]">
+                                <div className="border-b border-white/10 p-4 lg:border-b-0 lg:border-r lg:p-6">
+                                    <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
+                                        {featureTours.map((item, index) => {
+                                            const Icon = item.icon;
+                                            const isActive = activeFeature === index;
+                                            return (
+                                                <button
+                                                    key={item.number}
+                                                    type="button"
+                                                    onClick={() => setActiveFeature(index)}
+                                                    aria-pressed={isActive}
+                                                    className={`group min-w-[210px] rounded-2xl p-4 text-left transition-all lg:min-w-0 lg:p-5 ${
+                                                        isActive
+                                                            ? "bg-white text-slate-950 shadow-xl"
+                                                            : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={`flex size-10 items-center justify-center rounded-xl ${isActive ? "bg-teal-50 text-teal-700" : "bg-white/5 text-slate-500 group-hover:text-teal-300"}`}>
+                                                            <Icon className="size-5" />
+                                                        </span>
+                                                        <div className="flex-1">
+                                                            <span className={`text-[10px] font-bold tracking-[0.18em] ${isActive ? "text-teal-600" : "text-slate-600"}`}>
+                                                                {item.number}
+                                                            </span>
+                                                            <p className="mt-0.5 font-bold">{item.label}</p>
                                                         </div>
-                                                        <ul className="space-y-1.5 text-[10px] leading-relaxed text-gray-600">
-                                                            <li className="flex gap-2">
-                                                                <span className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0"></span>
-                                                                <span>负责核心业务线的规划与落地，协调产研团队 20+ 人。</span>
-                                                            </li>
-                                                            <li className="flex gap-2">
-                                                                <span className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0"></span>
-                                                                <span>搭建智能化运营后台，引入 AI 算法提升审核效率 40%。</span>
-                                                            </li>
-                                                            <li className="flex gap-2">
-                                                                <span className="w-1 h-1 rounded-full bg-gray-400 mt-1.5 flex-shrink-0"></span>
-                                                                <span>优化用户转化链路，使核心转化率提升 15%，季度营收增长 200万。</span>
-                                                            </li>
-                                                        </ul>
+                                                        <ChevronRight className={`hidden size-4 transition-transform lg:block ${isActive ? "translate-x-1 text-teal-600" : "text-slate-700"}`} />
                                                     </div>
-                                                </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="mt-8 hidden border-t border-white/10 pt-7 lg:block">
+                                        <div className="flex items-center justify-between text-xs text-slate-500">
+                                            <span>产品导览</span>
+                                            <span>{feature.number} / 03</span>
+                                        </div>
+                                        <div className="mt-3 grid grid-cols-3 gap-2">
+                                            {featureTours.map((item, index) => (
+                                                <button
+                                                    key={item.number}
+                                                    type="button"
+                                                    aria-label={`查看${item.label}`}
+                                                    onClick={() => setActiveFeature(index)}
+                                                    className={`h-1.5 rounded-full transition-colors ${activeFeature === index ? "bg-teal-400" : "bg-white/10 hover:bg-white/25"}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="min-w-0 bg-[#f8fafc] p-5 text-slate-950 sm:p-8 lg:p-10">
+                                    <div key={feature.number} className="animate-in fade-in slide-in-from-right-3 duration-300">
+                                        <div className="grid gap-8 xl:grid-cols-[0.8fr_1.2fr] xl:items-center">
+                                            <div>
+                                                <span className="flex size-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-700">
+                                                    <ActiveFeatureIcon className="size-6" />
+                                                </span>
+                                                <h3 className="mt-6 text-3xl font-bold tracking-tight text-slate-950">{feature.title}</h3>
+                                                <p className="mt-4 text-base leading-7 text-slate-600">{feature.description}</p>
+                                                <ul className="mt-6 space-y-3">
+                                                    {feature.bullets.map((bullet) => (
+                                                        <li key={bullet} className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                                                            <span className="flex size-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                                                                <Check className="size-3.5" />
+                                                            </span>
+                                                            {bullet}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                                <Button
+                                                    onClick={() => onNavigate(feature.page)}
+                                                    className="mt-8 h-11 rounded-xl bg-slate-950 px-5 text-white hover:bg-slate-800"
+                                                >
+                                                    {feature.action}
+                                                    <ArrowRight className="size-4" />
+                                                </Button>
+                                            </div>
+
+                                            <div className="min-h-[390px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_24px_70px_-30px_rgba(15,23,42,0.35)]">
+                                                {activeFeature === 0 && (
+                                                    <div className="flex h-full min-h-[390px] flex-col bg-slate-900 text-white">
+                                                        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="relative flex size-9 items-center justify-center rounded-full bg-teal-400/15 text-teal-300">
+                                                                    <Mic2 className="size-4" />
+                                                                    <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-slate-900 bg-emerald-400" />
+                                                                </span>
+                                                                <div>
+                                                                    <p className="text-sm font-bold">技术一面</p>
+                                                                    <p className="text-[10px] text-slate-500">AI 面试官 · 语音在线</p>
+                                                                </div>
+                                                            </div>
+                                                            <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">03 / 06</span>
+                                                        </div>
+                                                        <div className="flex-1 space-y-5 p-5">
+                                                            <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white/8 p-4 text-sm leading-6 text-slate-200">
+                                                                如果线上服务出现突发流量，你会如何定位并解决性能瓶颈？
+                                                            </div>
+                                                            <div className="ml-auto max-w-[86%] rounded-2xl rounded-tr-sm bg-teal-500 p-4 text-sm leading-6 text-white">
+                                                                我会先从监控指标判断瓶颈发生在应用、数据库还是下游服务……
+                                                            </div>
+                                                            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                                                                <p className="text-xs font-semibold text-teal-300">智能追问</p>
+                                                                <p className="mt-2 text-sm leading-6 text-slate-300">如果确认数据库连接池已经打满，你会优先采取什么措施？</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="border-t border-white/10 p-4">
+                                                            <div className="flex h-12 items-center justify-center gap-1 rounded-xl bg-white/5">
+                                                                {[12, 22, 34, 18, 40, 28, 46, 32, 18, 36, 24, 14].map((height, index) => (
+                                                                    <span key={`${height}-${index}`} className="w-1 rounded-full bg-teal-400" style={{ height }} />
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {activeFeature === 1 && (
+                                                    <div className="min-h-[390px] bg-slate-100 p-4 sm:p-5">
+                                                        <div className="flex items-center justify-between rounded-t-2xl border border-b-0 border-slate-200 bg-white px-4 py-3">
+                                                            <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                                                                <FileText className="size-4 text-teal-600" />
+                                                                项目经历 · 智能改写
+                                                            </div>
+                                                            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">匹配度 +18%</span>
+                                                        </div>
+                                                        <div className="grid rounded-b-2xl border border-slate-200 bg-white md:grid-cols-2">
+                                                            <div className="border-b border-slate-200 p-5 md:border-b-0 md:border-r">
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">修改前</span>
+                                                                <p className="mt-4 text-sm leading-7 text-slate-500 line-through decoration-red-300">
+                                                                    负责公司核心系统的前端开发，完成多个功能模块，参与性能优化工作。
+                                                                </p>
+                                                                <div className="mt-6 rounded-xl bg-red-50 p-3 text-xs leading-5 text-red-700">
+                                                                    缺少行动细节与量化结果，无法体现个人贡献。
+                                                                </div>
+                                                            </div>
+                                                            <div className="p-5">
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">优化后</span>
+                                                                <p className="mt-4 text-sm leading-7 text-slate-700">
+                                                                    主导核心工作台前端架构升级，通过组件重构与按需加载，将首屏时间降低
+                                                                    <mark className="mx-1 rounded bg-teal-100 px-1 text-teal-800">38%</mark>。
+                                                                </p>
+                                                                <div className="mt-6 flex flex-wrap gap-2">
+                                                                    {["动作明确", "结果量化", "岗位关键词"].map((tag) => (
+                                                                        <span key={tag} className="rounded-md bg-teal-50 px-2 py-1 text-[10px] font-semibold text-teal-700">{tag}</span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-500">
+                                                            <span>HR 审核官：表达可信，建议保留</span>
+                                                            <ShieldCheck className="size-4 text-emerald-600" />
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {activeFeature === 2 && (
+                                                    <div className="min-h-[390px] bg-white p-5 sm:p-6">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <p className="text-xs font-semibold text-slate-400">能力趋势</p>
+                                                                <p className="mt-1 text-lg font-bold text-slate-900">正在稳定提升</p>
+                                                            </div>
+                                                            <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
+                                                                <TrendingUp className="size-3.5" /> +16%
+                                                            </span>
+                                                        </div>
+                                                        <div className="mt-6 rounded-2xl bg-slate-50 p-4">
+                                                            <svg viewBox="0 0 420 150" className="h-36 w-full" role="img" aria-label="近五次面试能力得分持续上升">
+                                                                <defs>
+                                                                    <linearGradient id="scoreArea" x1="0" y1="0" x2="0" y2="1">
+                                                                        <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.28" />
+                                                                        <stop offset="100%" stopColor="#14b8a6" stopOpacity="0" />
+                                                                    </linearGradient>
+                                                                </defs>
+                                                                <path d="M20 126 C80 112, 95 103, 130 108 S205 82, 225 86 S300 60, 326 66 S375 35, 400 28 L400 140 L20 140 Z" fill="url(#scoreArea)" />
+                                                                <path d="M20 126 C80 112, 95 103, 130 108 S205 82, 225 86 S300 60, 326 66 S375 35, 400 28" fill="none" stroke="#14b8a6" strokeWidth="4" strokeLinecap="round" />
+                                                                {["20,126", "130,108", "225,86", "326,66", "400,28"].map((point) => {
+                                                                    const [cx, cy] = point.split(",");
+                                                                    return <circle key={point} cx={cx} cy={cy} r="5" fill="white" stroke="#14b8a6" strokeWidth="3" />;
+                                                                })}
+                                                            </svg>
+                                                        </div>
+                                                        <div className="mt-5 grid grid-cols-2 gap-3">
+                                                            {[
+                                                                ["表达结构", "82", "bg-teal-500"],
+                                                                ["技术深度", "76", "bg-blue-500"],
+                                                                ["问题解决", "79", "bg-violet-500"],
+                                                                ["团队协作", "84", "bg-amber-500"],
+                                                            ].map(([label, score, color]) => (
+                                                                <div key={label} className="rounded-xl border border-slate-200 p-3">
+                                                                    <div className="flex items-center justify-between text-xs">
+                                                                        <span className="text-slate-500">{label}</span>
+                                                                        <span className="font-bold text-slate-900">{score}</span>
+                                                                    </div>
+                                                                    <div className="mt-2 h-1.5 rounded-full bg-slate-100">
+                                                                        <div className={`h-full rounded-full ${color}`} style={{ width: `${score}%` }} />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="px-5 py-24 sm:px-8 lg:py-30">
+                    <div className="mx-auto max-w-7xl">
+                        <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+                            <div className="lg:sticky lg:top-28">
+                                <p className="text-sm font-bold uppercase tracking-[0.2em] text-teal-600">Simple workflow</p>
+                                <h2 className="mt-3 text-4xl font-bold tracking-tight text-slate-950">三步建立你的训练闭环</h2>
+                                <p className="mt-5 max-w-md leading-7 text-slate-500">
+                                    不需要学习复杂操作。提供真实材料，剩下的分析、规划和复盘交给职跃。
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => onNavigate("guide")}
+                                    className="mt-7 rounded-full border-slate-300 bg-white px-5"
+                                >
+                                    查看完整指南
+                                    <ChevronRight className="size-4" />
+                                </Button>
+                            </div>
+
+                            <div className="space-y-4">
+                                {workflowSteps.map((step) => {
+                                    const Icon = step.icon;
+                                    return (
+                                        <div key={step.number} className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-[72px_1fr_48px] sm:items-center">
+                                            <span className="text-3xl font-bold tracking-tight text-slate-200">{step.number}</span>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-900">{step.title}</h3>
+                                                <p className="mt-1.5 text-sm leading-6 text-slate-500">{step.description}</p>
+                                            </div>
+                                            <span className="flex size-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                                                <Icon className="size-5" />
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="px-5 pb-24 sm:px-8 lg:pb-30">
+                    <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-slate-950 px-7 py-12 text-white sm:px-12 lg:px-16 lg:py-16">
+                        <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.25),transparent_65%)]" />
+                        <div className="relative flex flex-col justify-between gap-10 lg:flex-row lg:items-center">
+                            <div>
+                                <div className="flex items-center gap-2 text-sm font-semibold text-teal-300">
+                                    <WandSparkles className="size-4" />
+                                    从下一次面试开始改变
+                                </div>
+                                <h2 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
+                                    让每一次练习，都成为下一次机会的准备。
+                                </h2>
+                                <div className="mt-5 flex flex-wrap gap-4 text-sm text-slate-400">
+                                    <span className="flex items-center gap-2"><Zap className="size-4 text-teal-400" /> 快速开始</span>
+                                    <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-teal-400" /> 数据本地隔离</span>
+                                </div>
+                            </div>
+                            <Button
+                                size="lg"
+                                onClick={() => onNavigate("interview")}
+                                className="h-13 shrink-0 rounded-xl bg-teal-400 px-7 text-base font-bold text-slate-950 hover:bg-teal-300"
+                            >
+                                创建第一次模拟面试
+                                <ArrowRight className="size-5" />
+                            </Button>
                         </div>
                     </div>
                 </section>
             </main>
 
-            {/* 页脚标志（可选，美观填充） */}
-            <footer className="border-t border-gray-100 py-12">
-                <div className="max-w-7xl mx-auto px-6">
-                    <p className="text-center text-sm text-gray-400 mb-6">即刻免费体验</p>
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-40">
-                        {/* 页脚标志占位符（可选，美观填充） */}
-                        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
+            <footer className="border-t border-slate-200 bg-white px-5 py-8 sm:px-8">
+                <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-slate-400 sm:flex-row">
+                    <div className="flex items-center gap-2">
+                        <Image src="/logo.png" alt="职跃 CareerLeap" width={28} height={28} />
+                        <span className="font-semibold text-slate-600">职跃 CareerLeap</span>
                     </div>
+                    <p>看见优势，练好表达，拿下机会。</p>
                 </div>
             </footer>
-        </div >
+        </div>
     );
 }
-
