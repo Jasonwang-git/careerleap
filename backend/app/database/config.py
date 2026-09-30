@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 logger = logging.getLogger(__name__)
 
 # 从环境变量读取数据库 URL
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:123456@localhost:5432/ai_interview")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:123456@localhost:5432/careerleap")
 
 
 def get_postgres_config() -> dict:
@@ -28,7 +28,7 @@ def get_postgres_config() -> dict:
         "port": parsed.port or 5432,
         "user": parsed.username or "postgres",
         "password": parsed.password or "",
-        "database": parsed.path.lstrip("/") or "ai_interview",
+        "database": parsed.path.lstrip("/") or "careerleap",
     }
 
 

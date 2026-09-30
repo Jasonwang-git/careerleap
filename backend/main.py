@@ -131,8 +131,8 @@ def handle_signal(signum, frame):
 
 # 创建 FastAPI 应用实例
 app = FastAPI(
-    title="AI 面试助手 API",
-    description="基于 FastAPI + LangGraph 的智能面试系统后端",
+    title="职跃 CareerLeap API",
+    description="基于 FastAPI + LangGraph 的智能面试与简历优化后端",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -141,9 +141,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://interview.1624899.xyz",  # Cloudflare Pages 域名
-        "https://ai-interview-63l.pages.dev",           # Cloudflare Pages 主域名
-        "http://localhost:3000",                         # 本地开发
+        "http://localhost:3000",  # 本地开发
+        "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],

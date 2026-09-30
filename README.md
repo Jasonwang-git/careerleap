@@ -27,13 +27,11 @@
 
 ## 📖 项目简介
 
-职跃 CareerLeap 是一个利用大语言模型（LLM）和 LangGraph 状态机技术构建的综合求职辅助系统。它不仅能进行全真模拟面试，还能像专业的职业咨询师一样，通过多智能体协作（Multi-Agent）对简历进行深度诊断和定向优化，帮助求职者全方位提升竞争力。现已上线测试：[职跃 CareerLeap](https://interview.1624899.xyz)
+职跃 CareerLeap 是一个利用大语言模型（LLM）和 LangGraph 状态机技术构建的综合求职辅助系统。它不仅能进行全真模拟面试，还能像专业的职业咨询师一样，通过多智能体协作（Multi-Agent）对简历进行深度诊断和定向优化，帮助求职者全方位提升竞争力。
 
 ### 🎬 演示
 
 ![Demo Screenshot](Screenshot/1.png) ![Demo Screenshot](Screenshot/2.png) ![Demo Screenshot](Screenshot/3.png) ![Demo Screenshot](Screenshot/4.png)
-
-*(更多演示图待更新)*
 
 ---
 
@@ -110,8 +108,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/yourusername/ai-interview.git
-cd ai-interview
+git clone https://github.com/Jasonwang-git/careerleap.git
+cd careerleap
 ```
 
 ### 2. 配置环境变量
@@ -126,7 +124,7 @@ cp .env.production.example .env
 
 ```bash
 # 数据库
-DATABASE_URL=postgresql://ai_interview:your_password@localhost:5432/ai_interview
+DATABASE_URL=postgresql://careerleap:your_password@localhost:5432/careerleap
 
 # LLM 配置
 OPENAI_API_KEY=sk-your-api-key
@@ -141,10 +139,10 @@ FAST_MODEL=gpt-3.5-turbo
 
 ```bash
 docker run -d \
-  --name ai_interview_db \
-  -e POSTGRES_USER=ai_interview \
+  --name careerleap_db \
+  -e POSTGRES_USER=careerleap \
   -e POSTGRES_PASSWORD=your_password \
-  -e POSTGRES_DB=ai_interview \
+  -e POSTGRES_DB=careerleap \
   -p 5432:5432 \
   postgres:16-alpine
 ```
