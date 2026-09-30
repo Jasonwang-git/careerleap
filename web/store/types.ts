@@ -101,7 +101,7 @@ export interface ResumeResultItem {
 // 常量配置
 // ============================================================================
 
-// API 提供商配置 (2025年最新模型)
+// API 提供商配置
 export const API_PROVIDERS = [
     { id: 'openai', name: 'OpenAI', baseUrl: 'https://api.openai.com/v1', apiKeyUrl: 'https://platform.openai.com/api-keys', models: ['gpt-5.2', 'gpt-5.1', 'gpt-5-mini', 'gpt-4o-mini', 'gpt-4o'] },
     { id: 'deepseek', name: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', apiKeyUrl: 'https://platform.deepseek.com/api_keys', models: ['deepseek-chat', 'deepseek-reasoner'] },

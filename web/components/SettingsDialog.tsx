@@ -502,7 +502,7 @@ export function SettingsDialog({
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-base font-bold text-teal-900">
                                             <HelpCircle className="w-5 h-5" />
-                                            小白配置全攻略 (2026年1月版)
+                                            小白配置全攻略
                                         </div>
                                         <button onClick={() => setShowTutorial(false)} className="text-teal-400 hover:text-teal-600">×</button>
                                     </div>
