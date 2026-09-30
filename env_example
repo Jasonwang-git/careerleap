@@ -1,31 +1,25 @@
-# 心流 API 配置（用于 LLM）
-XINLIU_API_KEY=xxxx
-XINLIU_API_BASE=https://apis.iflow.cn/v1
-XINLIU_API_MODEL=qwen3-coder-plus
+# 职跃 CareerLeap 环境变量示例
+# 复制为 .env 后按需填写；API Key 也可在前端设置中配置（推荐）
 
-# 嵌入模型配置（SiliconFlow）
-EMBEDDING_API_KEY=xxxx
-EMBEDDING_API_BASE=https://api.siliconflow.cn/v1
-EMBEDDING_API_MODEL=BAAI/bge-m3
+# ===== 数据库 =====
+DATABASE_URL=postgresql://careerleap:your_password@localhost:5432/careerleap
 
-# 文件服务配置
+# ===== 默认 LLM（可被前端设置覆盖）=====
+OPENAI_API_KEY=
+OPENAI_BASE_URL=https://api.openai.com/v1
+SMART_MODEL=gpt-4
+FAST_MODEL=gpt-3.5-turbo
+
+# ===== 文件上传 =====
 UPLOAD_DIR=data/resumes
 MAX_FILE_SIZE_MB=10
 ALLOWED_FILE_EXTENSIONS=pdf,docx,txt
 MAX_RESUME_COUNT=5
 
-# ============================================================================
-# LLM 双通道配置（分级模型支持）
-# ============================================================================
-
-# Fast Channel (Fast & Cheap) - 用于意图识别、简单分类
-# 设置 temperature=0 以保证确定性输出
-FAST_LLM_API_KEY=your_fast_llm_api_key
-FAST_LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
-FAST_LLM_MODEL=glm-4-flash
-
-# Smart Channel (High Intelligence) - 用于生成复杂的面试官回复、点评和总结
-# 设置 temperature=0.7 以允许一定的创造性
-SMART_LLM_API_KEY=your_smart_llm_api_key
-SMART_LLM_BASE_URL=https://apis.iflow.cn/v1
-SMART_LLM_MODEL=qwen3-235b-a22b-instruct
+# ===== 可选：双通道服务端默认（当前主路径为前端按请求传入）=====
+# FAST_LLM_API_KEY=
+# FAST_LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+# FAST_LLM_MODEL=glm-4-flash
+# SMART_LLM_API_KEY=
+# SMART_LLM_BASE_URL=https://apis.iflow.cn/v1
+# SMART_LLM_MODEL=qwen3-235b-a22b-instruct
