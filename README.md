@@ -29,6 +29,8 @@
 
 职跃 CareerLeap 是一个利用大语言模型（LLM）和 LangGraph 状态机技术构建的综合求职辅助系统。它不仅能进行全真模拟面试，还能像专业的职业咨询师一样，通过多智能体协作（Multi-Agent）对简历进行深度诊断和定向优化，帮助求职者全方位提升竞争力。
 
+在线体验：[http://39.97.254.130:8000](http://39.97.254.130:8000)
+
 ### 🎬 演示
 
 ![Demo Screenshot](Screenshot/1.png) ![Demo Screenshot](Screenshot/2.png) ![Demo Screenshot](Screenshot/3.png) ![Demo Screenshot](Screenshot/4.png)
