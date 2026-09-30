@@ -201,8 +201,13 @@ python -m pytest tests -q
 
 ## 🐳 Docker 部署
 
+详细步骤见：[服务器部署指南](docs/服务器部署指南.md)
+
 ```bash
-docker-compose --env-file .env.production up -d --build
+cp .env.production.example .env.production
+# 编辑密码、NEXT_PUBLIC_API_URL、CORS_ORIGINS
+mkdir -p nginx/logs nginx/ssl
+docker compose --env-file .env.production up -d --build
 ```
 
 
@@ -211,6 +216,7 @@ docker-compose --env-file .env.production up -d --build
 ## 📚 文档
 
 - [快速启动指南](docs/快速启动指南.md)
+- [服务器部署指南](docs/服务器部署指南.md)
 
 ---
 

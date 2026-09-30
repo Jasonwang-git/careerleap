@@ -36,6 +36,7 @@ services:
       - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
       - SMART_MODEL=${SMART_MODEL:-gpt-4}
       - FAST_MODEL=${FAST_MODEL:-gpt-3.5-turbo}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
     networks:
       - careerleap_network
     healthcheck:

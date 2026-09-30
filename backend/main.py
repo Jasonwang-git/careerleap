@@ -137,13 +137,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# 配置 CORS - 允许的前端域名
+# 配置 CORS - 允许的前端域名（可用 CORS_ORIGINS 逗号分隔覆盖）
+_cors_origins_env = os.getenv("CORS_ORIGINS", "").strip()
+_cors_origins = (
+    [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
+    if _cors_origins_env
+    else [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # 本地开发
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
