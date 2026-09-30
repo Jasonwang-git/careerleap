@@ -5,8 +5,9 @@ WORKDIR /app
 # 复制 package.json
 COPY package*.json ./
 
-# 安装依赖（仓库未提交 package-lock 时用 install）
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# 使用国内 npm 镜像加速
+RUN npm config set registry https://registry.npmmirror.com \
+    && if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # 复制源代码
 COPY . .
