@@ -13,7 +13,16 @@ from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
 
 from app.core.graph import build_interview_graph
-from app.models.schemas import ChatRequest, ChatStreamResponse, InterviewStartRequest, ErrorResponse, RollbackRequest, ProfileGenerateRequest
+from app.models.schemas import (
+    ChatRequest,
+    ChatStreamResponse,
+    InterviewStartRequest,
+    ErrorResponse,
+    RollbackRequest,
+    ProfileGenerateRequest,
+    DrillStartRequest,
+    DrillEvaluateRequest,
+)
 from app.database.session_service import SessionService
 
 # 配置日志
@@ -137,7 +146,8 @@ async def start_interview(
             "question_count": 0,
             "api_config": api_config,  # 添加用户 API 配置
             "round_index": 1,
-            "round_type": "tech_initial"
+            "round_type": "tech_initial",
+            "interview_track": request.interview_track,
         }
         
         # 检查会话是否已存在，如果不存在则创建
@@ -701,3 +711,54 @@ async def get_session_profile(
                 "message": "获取会话画像失败"
             }
         )
+
+
+async def _ensure_session_access(session_id: str, user_id: Optional[str]) -> None:
+    session = await session_service.get_session(
+        session_id,
+        user_id=user_id or "default_user",
+    )
+    if session is None:
+        raise HTTPException(status_code=404, detail="会话不存在或无权访问")
+
+
+@router.post("/profile/session/{session_id}/drill/start")
+async def start_profile_drill(
+    session_id: str,
+    request: DrillStartRequest,
+    x_user_id: Optional[str] = Header(None, alias="X-User-ID"),
+):
+    """从报告短板一键开始五分钟专项训练。"""
+    await _ensure_session_access(session_id, x_user_id)
+    try:
+        from app.services.drill_service import get_drill_service
+
+        result = await get_drill_service().get_focus(session_id, request.focus_id)
+        return {"success": True, **result}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post("/profile/session/{session_id}/drill/evaluate")
+async def evaluate_profile_drill(
+    session_id: str,
+    request: DrillEvaluateRequest,
+    x_user_id: Optional[str] = Header(None, alias="X-User-ID"),
+):
+    """评价专项回答，保存训练记录并返回前后分数变化。"""
+    await _ensure_session_access(session_id, x_user_id)
+    try:
+        from app.services.drill_service import get_drill_service
+
+        result = await get_drill_service().evaluate(
+            session_id=session_id,
+            focus_id=request.focus_id,
+            answer=request.answer,
+            api_config=request.api_config.model_dump(),
+        )
+        return {"success": True, **result}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except json.JSONDecodeError as exc:
+        logger.error("专项训练评分返回了无效 JSON: %s", exc)
+        raise HTTPException(status_code=502, detail="模型评分格式异常，请重试") from exc

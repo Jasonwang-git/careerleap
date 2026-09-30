@@ -25,6 +25,8 @@ interface InterviewSetupProps {
     onCompanyInfoChange: (value: string) => void;
     maxQuestions: number;
     onMaxQuestionsChange: (value: number) => void;
+    interviewTrack: "general" | "product_manager";
+    onInterviewTrackChange: (value: "general" | "product_manager") => void;
     isLoading: boolean;
     hasApiConfig: boolean;
     onStartInterview: (mode: InterviewMode) => Promise<void>;
@@ -41,6 +43,8 @@ export function InterviewSetup({
     onCompanyInfoChange,
     maxQuestions,
     onMaxQuestionsChange,
+    interviewTrack,
+    onInterviewTrackChange,
     isLoading,
     hasApiConfig,
     onStartInterview,
@@ -162,10 +166,32 @@ export function InterviewSetup({
                     </p>
                 </div>
 
-                {/* 3. 设置问题数量 */}
+                {/* 3. 岗位训练赛道 */}
                 <div className="space-y-3">
                     <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-100 text-teal-600 text-xs font-bold">3</span>
+                        训练赛道
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                        {([
+                            ["product_manager", "产品经理专项", "产品设计、指标、策略、复盘、行为"],
+                            ["general", "通用岗位", "按简历与 JD 智能定制"],
+                        ] as const).map(([value, title, description]) => (
+                            <button key={value} type="button" onClick={() => onInterviewTrackChange(value)} className={cn(
+                                "rounded-xl border-2 p-3 text-left transition-all",
+                                interviewTrack === value ? "border-teal-500 bg-teal-50" : "border-gray-200 hover:border-gray-300"
+                            )}>
+                                <p className={cn("text-sm font-semibold", interviewTrack === value ? "text-teal-700" : "text-gray-700")}>{title}</p>
+                                <p className="mt-1 text-xs leading-5 text-gray-500">{description}</p>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* 4. 设置问题数量 */}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-100 text-teal-600 text-xs font-bold">4</span>
                         面试问题数量 (3-10)
                     </label>
 
@@ -188,10 +214,10 @@ export function InterviewSetup({
                     </p>
                 </div>
 
-                {/* 4. 面试模式选择 */}
+                {/* 5. 面试模式选择 */}
                 <div className="space-y-3">
                     <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-100 text-teal-600 text-xs font-bold">4</span>
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-100 text-teal-600 text-xs font-bold">5</span>
                         面试模式
                     </label>
 

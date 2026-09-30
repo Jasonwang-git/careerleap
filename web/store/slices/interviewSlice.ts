@@ -23,6 +23,7 @@ export interface InterviewFlowState {
     companyInfo: string;
     interviewProgress: InterviewProgress | null;
     maxQuestions: number;
+    interviewTrack: 'general' | 'product_manager';
     showAbilityProfile: boolean;
     apiError: string | null;
     isVoiceMode: boolean;
@@ -38,6 +39,7 @@ export interface InterviewFlowActions {
     setJobDescription: (jobDescription: string) => void;
     setCompanyInfo: (companyInfo: string) => void;
     setMaxQuestions: (maxQuestions: number) => void;
+    setInterviewTrack: (track: 'general' | 'product_manager') => void;
     uploadResume: (file: File) => Promise<void>;
     startInterview: (mode?: 'mock' | 'voice') => Promise<void>;
     sendMessage: (content: string) => Promise<void>;
@@ -84,6 +86,7 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
     companyInfo: '',
     interviewProgress: null,
     maxQuestions: 5,
+    interviewTrack: 'product_manager',
     showAbilityProfile: false,
     apiError: null,
     isVoiceMode: false,
@@ -99,6 +102,7 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
     setJobDescription: (jobDescription: string) => set({ jobDescription }),
     setCompanyInfo: (companyInfo: string) => set({ companyInfo }),
     setMaxQuestions: (maxQuestions: number) => set({ maxQuestions }),
+    setInterviewTrack: (interviewTrack) => set({ interviewTrack }),
 
     uploadResume: async (file: File) => {
         set({ isLoading: true });
@@ -131,7 +135,7 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
     },
 
     startInterview: async (mode: 'mock' | 'voice' = 'mock') => {
-        const { resume, jobDescription, companyInfo, maxQuestions, getApiConfigForRequest } = get();
+        const { resume, jobDescription, companyInfo, maxQuestions, interviewTrack, getApiConfigForRequest } = get();
 
         if (!resume) {
             throw new Error('请先上传简历');
@@ -199,6 +203,7 @@ export const createInterviewSlice = (set: SetState, get: GetState): InterviewFlo
             company_info: companyInfo || '未知',
             mode: 'mock',
             max_questions: maxQuestions,
+            interview_track: interviewTrack,
             api_config: apiConfig,
         };
 

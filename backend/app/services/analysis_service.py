@@ -8,7 +8,12 @@ import logging
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 
-from app.models.candidate_profile import CandidateProfile, AnalysisContext, DimensionScore
+from app.models.candidate_profile import (
+    CandidateProfile,
+    AnalysisContext,
+    DimensionScore,
+    ExpressionAnalysis,
+)
 from app.core.llms import get_llm_for_request
 from app.database.session_service import SessionService
 
@@ -106,6 +111,7 @@ class CandidateAnalysisService:
             
             # 解析 JSON
             profile_data = json.loads(json_str)
+            profile_data = self._normalize_closed_loop_data(profile_data, context.qa_history)
             
             # 创建 CandidateProfile 实例
             profile = CandidateProfile(**profile_data)
@@ -120,6 +126,51 @@ class CandidateAnalysisService:
         except Exception as e:
             logger.error(f"[AnalysisService] 分析执行失败: {e}", exc_info=True)
             return self._get_default_profile()
+
+    def _normalize_closed_loop_data(
+        self,
+        profile_data: Dict[str, Any],
+        qa_history: List[Dict[str, str]],
+    ) -> Dict[str, Any]:
+        """校验引用并补齐可稳定计算的表达指标，避免 AI 编造证据。"""
+        answers = [str(item.get("answer", "")) for item in qa_history]
+        joined_answers = "\n".join(answers)
+
+        evidence_items = profile_data.get("evidence_items") or []
+        valid_evidence = []
+        for item in evidence_items:
+            quote = str(item.get("answer_quote", "")).strip()
+            if quote and quote in joined_answers:
+                valid_evidence.append(item)
+        profile_data["evidence_items"] = valid_evidence[:8]
+
+        focuses = profile_data.get("training_focuses") or []
+        for index, focus in enumerate(focuses[:3]):
+            focus["id"] = focus.get("id") or f"focus-{index + 1}"
+            quote = str(focus.get("evidence_quote", "")).strip()
+            if quote and quote not in joined_answers:
+                focus["evidence_quote"] = ""
+            focus.setdefault("suggested_minutes", 5)
+            focus.setdefault("attempts", [])
+        profile_data["training_focuses"] = focuses[:3]
+
+        expression = profile_data.get("expression_analysis") or {}
+        non_empty_answers = [answer for answer in answers if answer.strip()]
+        expression["average_answer_length"] = (
+            round(sum(len(answer) for answer in non_empty_answers) / len(non_empty_answers))
+            if non_empty_answers else 0
+        )
+        filler_candidates = ["嗯", "呃", "然后", "就是", "那个", "其实", "可能", "对吧"]
+        filler_counts = {word: joined_answers.count(word) for word in filler_candidates}
+        expression["filler_words"] = [word for word, count in filler_counts.items() if count > 0]
+        expression["filler_count"] = sum(filler_counts.values())
+        # 纯文本会话没有可靠录音时间轴，这两项必须留空。
+        expression["pace_wpm"] = None
+        expression["pause_count"] = None
+        expression["average_answer_duration_seconds"] = None
+        expression["timing_note"] = "当前为文本面试，缺少音频时间轴；语速与停顿将在语音面试中评估。"
+        profile_data["expression_analysis"] = expression
+        return profile_data
     
     def _build_analysis_prompt(self, context: AnalysisContext) -> str:
         """构建分析 Prompt"""
@@ -219,10 +270,53 @@ class CandidateAnalysisService:
   "overall_assessment": "候选人整体表现...",
   "key_strengths": ["...", "..."],
   "key_weaknesses": ["...", "..."],
+  "evidence_items": [
+    {{
+      "dimension": "communication",
+      "question": "对应的面试问题",
+      "answer_quote": "必须逐字复制自候选人回答的短片段",
+      "rationale": "这段原话为什么支持该评分",
+      "improvement": "下一次回答可立即执行的改法"
+    }}
+  ],
+  "expression_analysis": {{
+    "average_answer_length": 0,
+    "filler_words": [],
+    "filler_count": 0,
+    "structure_score": 6.5,
+    "star_completeness": 0.6,
+    "conclusion_first_rate": 0.4,
+    "average_answer_duration_seconds": null,
+    "pace_wpm": null,
+    "pause_count": null,
+    "timing_note": "文本面试不评估语速和停顿"
+  }},
+  "training_focuses": [
+    {{
+      "id": "focus-1",
+      "title": "一个具体、简短的训练主题",
+      "dimension": "communication",
+      "priority": 1,
+      "evidence_quote": "必须逐字复制自候选人回答的短片段",
+      "rationale": "为什么这是当前短板",
+      "action": "明确且可执行的改进动作",
+      "drill_question": "可在 5 分钟内作答的针对性训练题",
+      "success_criteria": ["标准1", "标准2", "标准3"],
+      "suggested_minutes": 5,
+      "baseline_score": 5.5,
+      "attempts": []
+    }}
+  ],
   "recommendation": "maybe",
   "confidence": 0.75,
   "last_updated": "{datetime.now().isoformat()}"
 }}
+
+证据与训练要求：
+1. evidence_items 提供 3-6 条证据；answer_quote 必须是候选人回答中的连续原文，不得改写或杜撰。
+2. expression_analysis 只依据文本评估结构、STAR 完整度与结论前置。不要推测文本无法证明的语速和停顿，固定返回 null。
+3. training_focuses 从最重要的短板生成 1-3 个五分钟专项训练；每项都必须包含基线分、证据、动作、题目和可验收标准。
+4. 若岗位是产品经理，训练题优先覆盖产品设计、指标分析、策略题、项目复盘和行为面试。
 
 请客观、公正地进行评估，避免主观臆断。直接输出 JSON，不要包含任何其他文字。"""
 

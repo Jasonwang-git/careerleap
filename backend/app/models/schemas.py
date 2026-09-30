@@ -85,6 +85,9 @@ class InterviewStartRequest(BaseModel):
     job_description: Optional[str] = Field(default=None, description="岗位描述（下一轮面试时可从数据库加载）")
     company_info: str = Field(default="未知", description="公司背景信息")
     max_questions: int = Field(default=5, description="最大问题数量")
+    interview_track: Literal["general", "product_manager"] = Field(
+        default="general", description="岗位训练赛道"
+    )
     # 用户配置（可选）
     user_id: Optional[str] = Field(default=None, description="用户标识")
     api_config: Optional[ApiConfig] = Field(default=None, description="用户自定义 API 配置")
@@ -114,3 +117,15 @@ class ProfileGenerateRequest(BaseModel):
     """画像生成请求"""
     user_id: Optional[str] = Field(default=None, description="用户标识")
     api_config: Optional[ApiConfig] = Field(default=None, description="用户自定义 API 配置")
+
+
+class DrillStartRequest(BaseModel):
+    """开始专项训练。"""
+    focus_id: str = Field(..., description="画像中的训练重点 ID")
+
+
+class DrillEvaluateRequest(BaseModel):
+    """提交专项训练回答并进行对比评分。"""
+    focus_id: str = Field(..., description="画像中的训练重点 ID")
+    answer: str = Field(..., min_length=10, max_length=8000, description="本次训练回答")
+    api_config: ApiConfig = Field(..., description="用于评分的模型配置")

@@ -83,7 +83,8 @@ def build_planner_prompt(
     round_index: int = 1,
     previous_profile: Optional[Dict] = None,
     previous_questions: Optional[List[str]] = None,
-    output_format: str = "full"  # "full" 或 "simple"
+    output_format: str = "full",  # "full" 或 "simple"
+    interview_track: str = "general",
 ) -> str:
     """
     构建面试规划 Prompt
@@ -149,6 +150,18 @@ def build_planner_prompt(
         ]
     }"""
     
+    track_section = ""
+    if interview_track == "product_manager":
+        track_section = """
+    【产品经理专项赛道】：
+    题目组合应覆盖以下能力，并结合简历与岗位要求确定权重：
+    - 产品设计：用户、场景、痛点、方案与取舍
+    - 指标分析：北极星指标、拆解、异常归因与验证
+    - 策略题：目标、约束、优先级、风险与迭代
+    - 项目复盘：个人角色、关键决策、结果数据与反思
+    - 行为面试：协作、推动、冲突与影响力
+    若题目数量少于 5，优先覆盖岗位最相关的类别，禁止把多个大题机械拼成一道题。"""
+
     # 构建完整 Prompt
     prompt = f"""你是一位资深面试官。这是第 {round_index} 轮面试（类型：{round_type}）。
     你的任务是：根据以下信息，设计**不多不少，正好 {max_questions} 道**面试题目。
@@ -160,6 +173,7 @@ def build_planner_prompt(
     {resume or "未提供"}
     {previous_questions_section}
     【本轮面试侧重点】：{strategy['focus']}
+    {track_section}
     
     要求：
     {requirements}
@@ -244,7 +258,8 @@ async def generate_interview_plan(
     output_format: str = "full",
     session_id: Optional[str] = None,
     save_to_db: bool = False,
-    generate_hints: bool = False
+    generate_hints: bool = False,
+    interview_track: str = "general",
 ) -> List[Dict[str, Any]]:
     """
     生成面试计划（核心函数）
@@ -281,7 +296,8 @@ async def generate_interview_plan(
             round_index=round_index,
             previous_profile=previous_profile,
             previous_questions=previous_questions,
-            output_format=output_format
+            output_format=output_format,
+            interview_track=interview_track,
         )
         
         # 调用 LLM

@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal
 from pydantic import BaseModel, Field
 
 class VoiceStartRequest(BaseModel):
@@ -10,6 +10,7 @@ class VoiceStartRequest(BaseModel):
     job_description: Optional[str] = None
     company_info: Optional[str] = None
     max_questions: int = 5
+    interview_track: Literal["general", "product_manager"] = "general"
 
 
 class VoiceChatRequest(BaseModel):

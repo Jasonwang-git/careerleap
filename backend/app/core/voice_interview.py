@@ -165,7 +165,8 @@ async def node_planner(
     company_info: str,
     max_questions: int,
     api_config: Dict[str, Any],
-    session_id: Optional[str] = None  # 新增：用于多轮面试支持
+    session_id: Optional[str] = None,  # 新增：用于多轮面试支持
+    interview_track: str = "general",
 ) -> Dict[str, Any]:
     """
     规划节点：生成面试计划
@@ -233,7 +234,8 @@ async def node_planner(
         previous_questions=previous_questions,
         output_format="simple",  # 语音面试使用简单格式：只有 topic 和 content
         session_id=session_id,
-        save_to_db=True if session_id else False  # 如果有 session_id 则保存到数据库
+        save_to_db=True if session_id else False,  # 如果有 session_id 则保存到数据库
+        interview_track=interview_track,
     )
     
     # 构建 system_prompt
@@ -874,7 +876,8 @@ async def generate_interview_plan(
     company_info: str,
     max_questions: int,
     api_config: Dict[str, Any],
-    session_id: Optional[str] = None  # 新增：用于多轮面试支持
+    session_id: Optional[str] = None,  # 新增：用于多轮面试支持
+    interview_track: str = "general",
 ) -> List[Dict[str, str]]:
     """
     生成面试计划（对外接口，兼容现有调用）
@@ -890,7 +893,15 @@ async def generate_interview_plan(
     Returns:
         面试问题列表
     """
-    result = await node_planner(resume, job_description, company_info, max_questions, api_config, session_id)
+    result = await node_planner(
+        resume,
+        job_description,
+        company_info,
+        max_questions,
+        api_config,
+        session_id,
+        interview_track,
+    )
     return result.get("interview_plan", [])
 
 

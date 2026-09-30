@@ -13,3 +13,8 @@ test
 package-lock.json
 web/yarn.lock
 web/build_log.txt
+.chrome-screenshot-profile/
+.current-screenshots/
+.screenshot-*.log
+.screenshot-*.err.log
+.resume_word_log.txt

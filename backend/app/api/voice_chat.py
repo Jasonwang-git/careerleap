@@ -110,7 +110,8 @@ async def start_voice_interview(
                 company_info=session.metadata.company_info or "",
                 max_questions=session.metadata.max_questions or 5,
                 api_config=api_config,
-                session_id=session_id
+                session_id=session_id,
+                interview_track=request.interview_track,
             )
             await service.save_interview_plan(session_id, interview_plan)
         else:

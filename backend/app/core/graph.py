@@ -100,6 +100,7 @@ class InterviewState(TypedDict):
     # 轮次信息
     round_index: int
     round_type: str
+    interview_track: str
 
 
 # ============================================================================
@@ -119,6 +120,7 @@ async def node_planner(state: InterviewState):
     max_q = state.get("max_questions", 5)
     session_id = state.get("session_id")
     api_config = state.get("api_config")
+    interview_track = state.get("interview_track", "general")
     
     # 获取轮次信息
     round_index = 1
@@ -158,7 +160,8 @@ async def node_planner(state: InterviewState):
         output_format="full",
         session_id=session_id,
         save_to_db=True,
-        generate_hints=True
+        generate_hints=True,
+        interview_track=interview_track,
     )
     
     return {

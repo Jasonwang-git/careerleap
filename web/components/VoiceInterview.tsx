@@ -136,7 +136,8 @@ export function VoiceInterview({ sessionId, onEnd }: VoiceInterviewProps) {
                         resume_filename: useInterviewStore.getState().resume?.filename,
                         job_description: useInterviewStore.getState().jobDescription,
                         company_info: useInterviewStore.getState().companyInfo,
-                        max_questions: useInterviewStore.getState().maxQuestions
+                        max_questions: useInterviewStore.getState().maxQuestions,
+                        interview_track: useInterviewStore.getState().interviewTrack,
                     })
                 });
 

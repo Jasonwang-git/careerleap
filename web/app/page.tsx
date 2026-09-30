@@ -67,6 +67,7 @@ export default function InterviewPage() {
     companyInfo,
     interviewProgress,
     maxQuestions,
+    interviewTrack,
     currentSession,
     showAbilityProfile,
     apiConfig, // 订阅 apiConfig 以便配置更新时自动刷新
@@ -85,6 +86,7 @@ export default function InterviewPage() {
     setJobDescription,
     setCompanyInfo,
     setMaxQuestions,
+    setInterviewTrack,
     uploadResume,
     startInterview,
     sendMessage,
@@ -491,6 +493,8 @@ export default function InterviewPage() {
                 onCompanyInfoChange={setCompanyInfo}
                 maxQuestions={maxQuestions}
                 onMaxQuestionsChange={setMaxQuestions}
+                interviewTrack={interviewTrack}
+                onInterviewTrackChange={setInterviewTrack}
                 isLoading={isLoading}
                 hasApiConfig={hasApiConfig}
                 onStartInterview={handleStartInterview}
